@@ -1,0 +1,169 @@
+2024-02-12:
+
+PHASE 1
+Based on this chat (the first in the debate series)
+chat_messages=[
+    {
+        'role': 'system',
+        'content': "You are in a role play game. The following roles are available:\nDebate_Moderator_Agent: Debate_Moderator_Agent is a critical thinker with strong analytical skills and expertise in Python. They should have the ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. This role requires excellent communication skills to articulate challenges and provide constructive feedback without disrupting the flow of the discussion.\nAffirmative_Constructive_Debater: An affirmative constructive debater (named 'Affirmative_Constructive_Debater') is a critical thinker and effective communicator who can challenge prior assertions within the group chat, offering clarifications, corrections, or alternative perspectives. This individual should possess strong analytical skills to evaluate information and the ability to articulate their reasoning clearly. When relevant to a discussion involving Python code, the debater should be capable of reading, understanding, and suggesting improvements to the code, even though coding is not their primary role.\nNegative_Constructive_Debater: The negative constructive debater (named 'Negative_Constructive_Debater') is a critical thinker skilled in analyzing the validity of arguments and information presented in the group chat, with the ability to provide constructive feedback and counterpoints to enhance discussions. This individual should possess a strong command of logic, effective communication skills to articulate their critiques clearly, and when necessary, proficiency in Python to troubleshoot and suggest improvements to code shared within the group. They should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding or to optimize code functionality.\nAffirmative_Rebuttal_Debater: The affirmative rebuttal debater (named 'Affirmative_Rebuttal_Debater') is a critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. This individual should be articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse. If the debate involves the scrutiny of Python code, they should have a proficient understanding of Python to assess and address potential issues in code-related discussions effectively.\nNegative_Rebuttal_Debater: The negative rebuttal debater (named 'Negative_Rebuttal_Debater') is a critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity in group discussions. This individual should be proficient in Python for analyzing and correcting any flawed code shared within the chat. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\nDebate_Judge: Debate_Judge is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly. The role may occasionally involve basic Python knowledge to verify and correct code within discussions when relevant to the debate..\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. Only return the role.",
+    },
+    {
+        'role': 'user',
+        'content': f"Please debate the proposition '{topic}'.", # The debate will start with Affirmative_Constructive_Debater.",
+        'name': "Debate_Moderator_Agent"
+    },
+    {
+        'role': 'system',
+        'content': "Read the above conversation. Then select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. Only return the role.",
+    },
+]
+
+- Mixtral is consistent in returning only the role name when the prompt includes at the end: "Only return the role."
+    e.g. full prompt "Read the above conversation. Then select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. Only return the role."
+    - However it would sometimes not include the underscores and would escape underscores when it did:
+        e.g. instead of "Affirmative_Constructive_Debater" it would return "Affirmative\_Constructive\_Debater" OR "Affirmative Constructive Debater"
+    - Mixtral always returned the correct role in this first prompt
+    - Other models would, instead, take on the role and start debating.
+
+- On getting a single agent name returned, e.g. "Affirmative_Constructive_Debater"
+- NOTE: TEMPERATURE NOT SET - DEFAULT TEMPERATURE
+    - yi:34b-chat-q3_K_M - Poor 0/0/20- ignored the direction to just return the role and started debating.
+    - mixtral:8x7b-instruct-v0.1-q4_K_M - Excellent 0/20/20 - returned names in Markdown format (backslashes before underscores, e.g. "Affirmative\_Constructive\_Debater") and sometimes replaced underscores with spaces (E.g. "Affirmative Constructive Debater")
+    - llama13b-chat - Hit and Miss 0/10/20 - followed direction in outputting a role but chose the wrong role half the time, sometimes included underscores and sometimes spaces, added a lot of text around it (e.g. "Okay, I will select the role of... (drumroll please)... Affirmative Constructive Debater! Let's get started! 😄")
+    - mistral7b-instruct - Perfect 20/0/20 - Perfectly returned the exact name of the role and correct role.
+    - neural-chat:7b - Hit and Miss 6/0/20 - followed direction in outputting just the role name (and included underscores consistently), but only chose the correct agent 30% of the time (6 out of 20).
+    - openhermes:7b-mistral-v2.5 - Dissapointing 0/0/20 - outputted just the role name and with underscores, however always chose the wrong agent (moderator instead of first debater)
+    - Orca2:13b - Very inconsistent 8/0/20 - (like Qwen) Most of the time it started the debate rather than choosing a role. The other times in perfectly responded with just the agent name and included the underscores.
+    - phi-2 - Poor 0/0/10 - ignored direction and debated
+    - Solar:10.7b-instruct - Poor 3/0/20 - Never responded with just a role, mostly returned a summary of the roles and who does what.
+    - Qwen:14b-chat - Very inconsistent 7/0/20 - (like Orca2) Most of the time it started the debate rather than choosing a role. The other times in perfectly responded with just the agent name and included the underscores. One response was in Chinese.
+    - WINNERS - Mistral 7B Instruct, then Mixtral
+
+- WITH TEMPERATURE = 0 e.g. chat_completion = client.chat.completions.create(messages=chat_messages,model=modelName,temperature=0)
+    - yi:34b-chat-q3_K_M - Still Poor 0/0/10 - ignored direction to just return the role, and didn't attempt to participate. Not all responses the same.
+    - mixtral:8x7b-instruct-v0.1-q4_K_M - Excellent 0/10/10 - same as above regarding spaces and markdown, but correct and just the role
+    - llama13b-chat - Excellent 0/10/10 - Surprisingly temperature=0 works well here, it still put it out as a sentence and used spaces but returned the exact response 10/10 times: "Okay, I have selected the role of "Affirmative Constructive Debater"."
+    - mistral7b-instruct - Still Excellent 10/0/10 - Perfect.
+    - neural-chat:7b - Excellent 10/0/10 - Like Llama13b, this was much better with temperature=0, this matched Mistral7b-instruct
+    - openhermes:7b-mistral-v2.5 - Consistently wrong 0/0/10 - With temperature=0 it was very consistent in response but always chose the moderator role.
+    - Orca2:13b - Unhelpful 0/0/10 - Said it couldn't participate.
+    - phi-2 - Still poor 0/0/10 - ignored direction and debated
+    - Solar:10.7b-instruct - Undecided 0/10/10 - Correctly included the next role in the response, but said it was either that role or another, so indecisive.
+    - Qwen:14b-chat - Wrong 0/0/20 - Repeated the question or created its own debate
+    WINNERS - Mistral 7B Instruct and Neural Chat 7B, then Llama13B and Mixtral
+
+- With One Shot example added
+    - yi:34b-chat-q3_K_M - Poor 0/0/10 - Not close.
+    - mixtral:8x7b-instruct-v0.1-q4_K_M - Solid 0/10/10 - Consistently correct model but add backslash before underscore and another line about debating the proposition
+    - llama13b-chat - Poor 0/0/10 - Chose incorrect agent. Adding an example turned this into a dud.
+    - mistral7b-instruct - Perfect 10/0/10
+    - neural-chat:7b - Poor 0/0/10 - Chose incorrect agent. Adding an example turned this into a dud.
+    - openhermes:7b-mistral-v2.5 - Perfect 10/0/10 - Oddly with the one shot example this worked perfectly
+    - Orca2:13b - Poor 0/0/10 - Chose incorrect agent.
+    - phi-2 - Poor 0/0/10 - ignored direction and debated
+    - Solar:10.7b-instruct - Poor 0/0/10 - ignored direction and debated
+    - Qwen:14b-chat - Poor 0/0/10 - ignored direction and debateds
+    WINNERS - Mistral 7B Instruct and OpenHermes 7B Mistral, then Mixtral 
+
+- Temp=0, text changed end instruction text to "RETURN ONLY THE NAME OF THE ROLE. Output in plain text."
+    - yi:34b-chat-q3_K_M - Poor 0/0/5 - didn't want to participate
+    - mixtral:8x7b-instruct-v0.1-q4_K_M - Solid 0/5/5 - Consistently correct model but add backslash before underscore and another line about debating the proposition
+    - llama13b-chat - Solid 0/5/5 - Correct but used spaces instead of underscores
+    - mistral7b-instruct - Perfect 5/0/5
+    - neural-chat:7b - Perfect 5/0/5
+    - openhermes:7b-mistral-v2.5 - Poor 0/0/5 - Chose incorrect agent.
+    - Orca2:13b - Perfect 5/0/05
+    - phi-2 - Poor 0/0/10 - ignored direction and debated
+    - Solar:10.7b-instruct - Poor 0/0/5 - Chose incorrect agent.
+    - Qwen:14b-chat - Poor 0/0/10 - ignored direction and debateds
+    WINNERS - 
+
+---
+
+PHASE 2 - Should be "Negative_Constructive_Debater"
+Based on this chat (the second in the debate series)
+chat_messages=[
+    {
+        "content": "You are in a role play game. The following roles are available:\nDebate_Moderator_Agent: Debate_Moderator_Agent is a critical thinker with strong analytical skills and expertise in Python. They should have the ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. This role requires excellent communication skills to articulate challenges and provide constructive feedback without disrupting the flow of the discussion.\nAffirmative_Constructive_Debater: An affirmative constructive debater (named 'Affirmative_Constructive_Debater') is a critical thinker and effective communicator who can challenge prior assertions within the group chat, offering clarifications, corrections, or alternative perspectives. This individual should possess strong analytical skills to evaluate information and the ability to articulate their reasoning clearly. When relevant to a discussion involving Python code, the debater should be capable of reading, understanding, and suggesting improvements to the code, even though coding is not their primary role.\nNegative_Constructive_Debater: The negative constructive debater (named 'Negative_Constructive_Debater') is a critical thinker skilled in analyzing the validity of arguments and information presented in the group chat, with the ability to provide constructive feedback and counterpoints to enhance discussions. This individual should possess a strong command of logic, effective communication skills to articulate their critiques clearly, and when necessary, proficiency in Python to troubleshoot and suggest improvements to code shared within the group. They should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding or to optimize code functionality.\nAffirmative_Rebuttal_Debater: The affirmative rebuttal debater (named 'Affirmative_Rebuttal_Debater') is a critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. This individual should be articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse. If the debate involves the scrutiny of Python code, they should have a proficient understanding of Python to assess and address potential issues in code-related discussions effectively.\nNegative_Rebuttal_Debater: The negative rebuttal debater (named 'Negative_Rebuttal_Debater') is a critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity in group discussions. This individual should be proficient in Python for analyzing and correcting any flawed code shared within the chat. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\nDebate_Judge: Debate_Judge is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly. The role may occasionally involve basic Python knowledge to verify and correct code within discussions when relevant to the debate..\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. Only return the role.",
+        "role": "system"
+    },
+    {
+        "content": "Please debate the proposition 'Cows are better than Pigs.'.",
+        "role": "user",
+        "name": "Debate_Moderator_Agent"
+    },
+    {
+        "content": " Affirmative_Constructive_Debater: Thank you for presenting this interesting topic for debate. Let's discuss why we believe cows are better than pigs based on several key factors:\n\n1) Environmental impact: Cows have a more positive environmental footprint compared to pigs due to their feeding habits and waste management. Cows primarily eat grass, which not only helps reduce greenhouse gas emissions but also plays an essential role in maintaining healthy ecosystems. In contrast, pigs require large quantities of grain, which contributes significantly to deforestation when grown for animal feed production. Furthermore, cows' manure can be used as fertilizer and is often spread on fields to promote plant growth, while pig waste must be carefully managed in confined animal feeding operations (CAFOs) to prevent pollution.\n\n2) Ethical considerations: Cows are generally treated better than pigs when it comes to living conditions and welfare. While there are still instances of poor treatment, intensive farming practices for cows are less common compared to the industrialized pig production system, which often confines animals in cramped and unsanitary conditions with little to no natural behaviors or enrichment opportunities.\n\n3) Nutritional benefits: Milk from cows is a significant source of essential nutrients for humans, including calcium, vitamin D, protein, and other micronutrients that contribute to a healthy diet. Additionally, the by-products of cow milk production, such as cheese, yogurt, and butter, provide various health benefits and culinary applications. While pigs can also be sources of important nutrients like iron and B vitamins, their meat consumption is primarily driven by cultural preferences and not essential for human survival.\n\n4) Economic advantages: Dairy farming offers economic opportunities beyond the sale of milk, such as the production of cheese, yogurt, and butter, which can create jobs in rural areas and contribute to local economies. Furthermore, cows have a longer lifespan than pigs and are more adaptable to various environments, making them a more viable agricultural investment for farmers.\n\n5) Cultural significance: Cows hold cultural importance across the world. In India, they are considered sacred animals and play an essential role in religious practices. In Western cultures, cows provide milk and other dairy products that are staples in the diet and contribute to various culinary traditions. Pigs, on the other hand, have often been associated with negative stereotypes due to their role in spreading diseases like trichinosis and their use as a symbol of greed or wastefulness.\n\nIn conclusion, we argue that cows are better than pigs for several reasons, including environmental impact, ethical considerations, nutritional benefits, economic advantages, and cultural significance. We encourage the negative team to present their case, and we will be open to discussing any counterarguments they may have. Thank you.",
+        "role": "user",
+        "name": "Affirmative_Constructive_Debater"
+    },
+    {
+        "role": "system",
+        "content": "Read the above conversation. Then select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. Only return the role."
+    }
+]
+
+- Temp=0
+    - yi:34b-chat-q3_K_M - Poor 0/0/10 - Discussed arguments but didn't select one
+    - mixtral:8x7b-instruct-v0.1-q4_K_M - Perfect 10/0/10 - This time all correct and without the "\_" just underscore
+    - llama13b-chat - Poor 0/0/10 - Wrong agent
+    - mistral7b-instruct - Poor 0/0/10 - Wrong agent
+    - neural-chat:7b - Poor 0/0/10 - Debated
+    - openhermes:7b-mistral-v2.5 - Poor 0/0/10 - Debated
+    - Orca2:13b - Poor 0/0/10 - Debated
+    - phi-2 - Poor 0/0/10 - Returned blanks
+    - Solar:10.7b-instruct - Poor 0/0/10 - Debated
+    - Qwen:14b-chat - Poor 0/0/10 - Debated
+    WINNERS - Only one Mixtral 8x7b
+
+- Temp=0, added "exact order" text and changed text to "RETURN ONLY THE NAME OF THE ROLE. Output in plain text."
+    - yi:34b-chat-q3_K_M - Poor 0/0/5 - wrong agent
+    - mixtral:8x7b-instruct-v0.1-q4_K_M - Perfect 5/0/5 - with correct underscore
+    - llama13b-chat - Poor 0/0/5 - wrong agent
+    - mistral7b-instruct - Poor 0/0/5 - wrong agent
+    - neural-chat:7b - Poor 0/0/5 - debated
+    - openhermes:7b-mistral-v2.5 - Poor 0/0/5 - debated
+    - Orca2:13b - Poor 0/0/5 - debated
+    - phi-2 - Poor 0/0/5 - Returned blanks
+    - Solar:10.7b-instruct - Very good 5/0/5 - correct next role selected! Perhaps the prompt change is better for Solar
+    - Qwen:14b-chat - Poor 0/0/5 - Chose the correct agent but debated as it instead
+    WINNERS - Mixtral and Solar 10.7b
+
+- Temp=0, added "exact order" text and changed text to both role selection messages, added example output
+    - yi:34b-chat-q3_K_M - Poor 0/0/5 - debated
+    - mixtral:8x7b-instruct-v0.1-q4_K_M - Perfect 5/0/5 - with correct underscore
+    - llama13b-chat - Poor 0/0/5 - wrong agent
+    - mistral7b-instruct - Perfect 5/0/5 - worked better with example output
+    - neural-chat:7b - Poor 0/0/5 - chose the correct agent but debated as it instead of just outputting the agent name
+    - openhermes:7b-mistral-v2.5 - Poor 0/0/5 - debated
+    - Orca2:13b - Poor 0/0/5 - didn't choose an agent
+    - phi-2 - Poor 0/0/5 - Returned blanks
+    - Solar:10.7b-instruct - Very good 5/0/5 - correct
+    - Qwen:14b-chat - Poor 0/0/5 - Chose the correct agent but debated as it instead
+    WINNERS - 
+
+- Temp=0, emphasized with capitals the exact order and considering the next role, example output still there.
+    - yi:34b-chat-q3_K_M - Poor 0/0/10
+    - mixtral:8x7b-instruct-v0.1-q4_K_M - Perfect 10/0/10
+    - llama13b-chat - Very good 0/9/10 - All right except one was the wrong agent. Text correct.
+    - mistral7b-instruct - Poor 0/0/10 - Picked the moderator
+    - neural-chat:7b - Poor 0/0/10 - Debated
+    - openhermes:7b-mistral-v2.5 - Poor 0/0/10 - Debated
+    - Orca2:13b - Not quite right 0/0/10 - Correct agent but it debated rather than just returning it.
+    - phi-2 - Poor 0/0/5 - Returned blanks
+    - Solar:10.7b-instruct - Very good 10/0/10 - All right
+    - Qwen:14b-chat - Poor 0/0/10 - Chose the correct agent but debated as it instead
+    WINNERS - 
+
+- ABCD
+    - yi:34b-chat-q3_K_M -
+    - mixtral:8x7b-instruct-v0.1-q4_K_M -
+    - llama13b-chat - 
+    - mistral7b-instruct - 
+    - neural-chat:7b - 
+    - openhermes:7b-mistral-v2.5 - 
+    - Orca2:13b - 
+    - phi-2 - 
+    - Solar:10.7b-instruct - 
+    - Qwen:14b-chat - 
+    WINNERS - 

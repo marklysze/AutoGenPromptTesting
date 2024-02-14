@@ -1,0 +1,246 @@
+Correct order should be:
+0. Debate_Moderator_Agent
+1. Affirmative_Constructive_Debater
+2. Negative_Constructive_Debater
+3. Affirmative_Rebuttal_Debater
+4. Negative_Rebuttal_Debater
+5. Debate_Judge
+
+---- 1 ----
+- All roles as Mixtral
+- No changes to Autogen code base
+- No changes to debate agents (debateteam.json) - except changing agent names to have underscore instead of space and to add the text "Invite 'Affirmative_Constructive_Debater' to start the debate." to the end of the moderator's description.
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Affirmative_Rebuttal_Debater
+3. Affirmative_Rebuttal_Debater
+4. Debate_Moderator_Agent
+5. Negative_Rebuttal_Debater
+6. Negative_Rebuttal_Debater
+7. Affirmative_Rebuttal_Debater
+8. Affirmative_Rebuttal_Debater
+9. Negative_Rebuttal_Debater
+10. Debate_Judge
+11. Debate_Moderator_Agent
+12. Affirmative_Constructive_Debater
+13. Negative_Constructive_Debater
+14. Debate_Moderator_Agent
+15. <-- Hit Ctrl+C! -->
+
+
+---- 2 ----
+- All roles as Mixtral
+- CHANGED Autogen code base
+    1. Re-inforced importance of only returning role, plain text, and checking the order:
+        - groupchat.py - function select_speaker_prompt - changed return string text part "Only return the role."
+            to "RETURN ONLY THE NAME OF THE ROLE. CONSIDER THE ORDER OF THE ROLES FOR THE NEXT ROLE. Output in plain text format."
+        - Did not at an example of the output
+- No changes to debate agents (debateteam.json) - except as previous.
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Affirmative_Constructive_Debater
+3. Debate_Moderator_Agent who thanked affirmative but then acted as Negative_Constructive_Debater
+4. Affirmative_Rebuttal_Debater
+5. Affirmative_Rebuttal_Debater
+6. Debate_Moderator_Agent who acted as Negative_Rebuttal_Debater2 (note the 2 on the end)
+7. Affirmative_Constructive_Debater
+8. Debate_Moderator_Agent who acted as Negative_Rebuttal_Debater3!
+9. Debate_Moderator_Agent who acted as Affirmative_Rebuttal_Debater2!
+10. <-- Hit Ctrl_C! -->
+
+
+---- 3 ----
+- All roles as Mixtral
+- CHANGED Autogen code base
+    1. Added an example (one-shot):
+        - groupchat.py - function select_speaker_prompt - included "importance" changes above and added an example on the end "nExample output: Affirmative_Constructive_Debater.".
+- No changes to debate agents (debateteam.json) - except as previous.
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Negative_Constructive_Debater
+3. Negative_Rebuttal_Debater
+4. Negative_Rebuttal_Debater
+5. Negative_Rebuttal_Debater
+6. <-- Hit Ctrl_C! -->
+
+
+---- 4 ----
+- All roles as Mixtral
+- CHANGED Autogen code base
+    1. Added the one-shot example above to both pre message and post message (one-shot):
+        - groupchat.py - function select_speaker_prompt + function select_speaker_msg
+- No changes to debate agents (debateteam.json) - except as previous.
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Affirmative_Constructive_Debater
+3. Negative_Constructive_Debater
+4. Affirmative_Rebuttal_Debater
+5. Negative_Rebuttal_Debater
+6. Debate_Judge - provided judgement but didn't TERMINATE!
+7. Negative_Rebuttal_Debater
+8. <-- Hit Ctrl_C! -->
+
+
+---- 5 ----
+- All roles as Mixtral
+- CHANGED Autogen code base
+    1. Changes as above - groupchat.py - function select_speaker_prompt + function select_speaker_msg
+- CHANGED debate agents (debateteam.json)
+    1. To help with termination added the following to the end of the Debate_Judge's system_message: "REMEMBER, ALWAYS SAY 'TERMINATE' AT THE END OF YOUR JUDGEMENT."
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Affirmative_Constructive_Debater
+3. Negative_Constructive_Debater
+4. Negative_Rebuttal_Debater
+5. Debate_Moderator_Agent
+6. Affirmative_Constructive_Debater acting as Debate_Judge
+7. Debate_Moderator_Agent
+8. Affirmative_Constructive_Debater
+9. Invalid return value: "Debate\_Moderator\_Agent", ah the backslashes.
+10. <-- Hit Ctrl_C! -->
+
+---- 6 ----
+- CHANGED All roles as Mistral 7B 0.2 Instruct
+- Kept changed Autogen code base as above.
+- Kept changed debate agents (debateteam.json) as above.
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Negative_Rebuttal_Debater
+3. Debate_Moderator_Agent who acted as the judge and added TERMINATE, and it didn't terminate.
+4. Debate_Judge, included TERMINATE but didn't terminate.
+5. Debate_Judge, included TERMINATE but didn't terminate.
+6. Debate_Judge, included TERMINATE but didn't terminate.
+7. <-- Hit Ctrl_C! -->
+
+---- 6 ----
+- CHANGED All roles BACK to Mixtral
+- Kept changed Autogen code base as above.
+- CHANGED debate agents (debateteam.json) to add clearing ordering of the roles
+    1. Debate_Moderator_Agent system_message added numbers "(1)", "(2)" in front of each role and added debate judge explicitly: "Debaters must follow the order of (1) affirmative constructive (named 'Affirmative_Constructive_Debater'), (2) negative constructive (named 'Negative_Constructive_Debater'), (3) affirmative rebuttalist (named 'Affirmative_Rebuttal_Debater'), and (4) negative rebuttalist (named 'Negative_Rebuttal_Debater'), then (5) debate judge (named 'Debate_Judge')"
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Affirmative_Constructive_Debater
+3. Negative_Constructive_Debater
+4. Negative_Rebuttal_Debater
+5. Negative_Rebuttal_Debater
+6. Negative_Rebuttal_Debater
+7. Negative_Rebuttal_Debater
+8. <-- Hit Ctrl_C! -->
+
+---- 7 ----
+- All roles to Mixtral
+- Kept changed Autogen code base as above.
+- CHANGED debate agents (debateteam.json) to add order number in the role descriptions
+    1. For all roles description field starts with "(1)" or "(2)" etc.
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Affirmative_Constructive_Debater
+3. Negative_Constructive_Debater
+4. Affirmative_Rebuttal_Debater
+5. Negative_Rebuttal_Debater
+6. Debate_Judge but no TERMINATE included!
+7. Debate_Moderator_Agent but no TERMINATE included!
+8. <-- Hit Ctrl_C! -->
+
+
+---- 8 ----
+- All roles to Mixtral
+- Kept changed Autogen code base as above.
+- CHANGED debate agents (debateteam.json) updated moderator to reply with only TERMINATE once Debate_Judge has provided their judgement.
+    1. Debate_Moderator_Agent added "IF Debate_Judge HAS SPOKEN REPLY WITH ONLY 'TERMINATE'" to end of system_message
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Affirmative_Constructive_Debater
+3. Negative_Constructive_Debater
+4. Affirmative_Rebuttal_Debater
+5. Debate_Moderator_Agent acting as Negative_Rebuttal_Debater
+6. Debate_Moderator_Agent acting as "Affirmative_Closing_Debater" - WHO'S THAT?
+7. Debate_Moderator_Agent acting as "Negative_Closing_Debater" - WHO'S THAT?
+8. Debate_Judge
+9. Debate_Judge
+10. Invalid return value: "Debate\_Moderator\_Agent", ah the backslashes.
+11. <-- Hit Ctrl_C! -->
+
+
+---- 9 ----
+- All roles to Mixtral
+- CHANGED Autogen code to replace out "\_" to "_":
+    - conversable_agent.py - function _generate_oai_reply_from_client - "extracted_response = extracted_response.replace("\_", "_")"
+- Kept changed debate agents (debateteam.json)
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Affirmative_Constructive_Debater
+3. Negative_Constructive_Debater
+4. Affirmative_Rebuttal_Debater
+5. Debate_Moderator_Agent
+6. Negative_Rebuttal_Debater
+7. Debate_Moderator_Agent
+8. Debate_Judge
+9. TERMINATE (Yep it returned TERMINATE)
+10. Debate_Moderator_Agent replied with just "TERMINATE" and it ended! Yay!
+
+---- 10 ----
+- Running to check consistency.
+- All roles to Mixtral
+- Kept changed Autogen code as above.
+- Kept changed debate agents (debateteam.json)
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Negative_Constructive_Debater
+3. Debate_Moderator_Agent acting as Affirmative_Constructive_Debater and multiple others
+4. Debate_Judge
+5. Affirmative_Rebuttal_Debater
+6. Debate_Moderator_Agent
+7. Debate_Moderator_Agent
+8. Debate_Judge
+9. Debate_Moderator_Agent
+10. ... and on and on... ran out of turns (15)
+
+---- 11 ----
+- Running to check consistency.
+- All roles to Mixtral
+- Kept changed Autogen code as above.
+- Kept changed debate agents (debateteam.json)
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. Affirmative_Constructive_Debater
+3. Negative_Constructive_Debater
+4. Negative_Rebuttal_Debater
+5. Negative_Rebuttal_Debater
+6. Negative_Rebuttal_Debater
+7. ... and so on...
+
+---- 12 ----
+- Running to check consistency.
+- All roles to Mixtral
+- Kept changed Autogen code as above.
+- Kept changed debate agents (debateteam.json)
+- temperature = 0
+
+Resulting order / errors:
+1. Debate_Moderator_Agent
+2. 

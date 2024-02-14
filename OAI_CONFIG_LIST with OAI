@@ -1,0 +1,7 @@
+[
+    {
+        "model": "Local8801",
+        "api_key": "NotRequired",
+        "base_url": "http://0.0.0.0:8801"
+    }
+]

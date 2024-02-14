@@ -1,0 +1,21 @@
+[
+    {
+        "model": "mixtralcopy",
+        "api_key": "NotRequired",
+        "base_url": "http://localhost:11434/v1"
+    },
+    {
+        "model": "gpt-4",
+        "api_key": "<your Azure OpenAI API key here>",
+        "base_url": "<your Azure OpenAI API base here>",
+        "api_type": "azure",
+        "api_version": "2023-08-01-preview"
+    },
+    {
+        "model": "gpt-4-32k",
+        "api_key": "<your Azure OpenAI API key here>",
+        "base_url": "<your Azure OpenAI API base here>",
+        "api_type": "azure",
+        "api_version": "2023-08-01-preview"
+    }
+]
