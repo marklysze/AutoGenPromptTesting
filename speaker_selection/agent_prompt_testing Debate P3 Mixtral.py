@@ -255,7 +255,7 @@ for modelName in models:
 
     for index, chat_sequence in enumerate(chat_sequences):
 
-        if index < 4:
+        if index < 0:
             continue # Skip some while testing
         elif index >= 3:
             # Test by truncating the content for the debating agents speaking (chat messsages 2, 3, 4)

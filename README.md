@@ -6,7 +6,7 @@ I'm investigating points in the AutoGen workflow (from the code base to the agen
 
 Currently testing with a "Group Chat" debating scenario (see [debate.py](speaker_selection/debate.py)) that was created by tevslin (see his [repository](https://github.com/tevslin/debate_team) and [blog post](https://blog.tomevslin.com/2024/02/an-ai-debate.html), thank you!) using Mixtral and various other local LLMs to get the LLM to return the name of the next agent/role consistently. This is a good test because it involves an LLM understanding an order of agents, reviewing where the debate is up to and determining the next agent. We could almost do this in a round-robin format, or a finite state machine (where we set who can talk to who), but it's important to be able to prompt an LLM to pick the right, next, agent.
 
-I'll put any findings in this README. Please note that this is evolving and I'm just one person trying to make things work :).
+I'll put any findings in this README. Please note that this is evolving and I'm just one person trying to make things work :smiley:.
 
 ### LLMs I'm trying
 - Llama2 13B Chat
@@ -143,3 +143,14 @@ Lastly, a lot of it is promping skills and I'm no expert :).
 See more information in one of my [prompt findings](speaker_selection/PromptFindings.txt) documents that shows how I iterated through prompts and what the effect was on each of the LLMs' responses.
 
 Have you used other models that do follow directions well, please let me know!
+
+### Hold up, what about after we address all these challenges?
+Implementing some of these (temp=0, summarising, cleaning agent names, changing role selection prompt) I was able to get Mixtral to choose the right agent every time during speaker selection (5 sequences with 10 iterations each). :fireworks:
+
+Without tuning the prompts to these other models:
+- Mistral 7B and Solar 10.7B to successfully pass 4 of the 5 agent selection tests.
+- Llama 2 13B passed 3 out of 5 tests.
+
+I believe these are significant because they were less successful before these changes and rather unpredictable.
+
+Of course my testing and tweaking, particularly on prompts, is on the test chat I'm working on. So more testing would be good.
