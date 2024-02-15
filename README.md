@@ -4,9 +4,9 @@ This repository is my playground for testing prompts that generate suitable resp
 
 I'm investigating points in the AutoGen workflow (from the code base to the agent descriptions) that need to be tailored to accommodate local LLMs that aren't as capable as large private models like AI's ChatGPT.
 
-Currently testing with a "Group Chat" debating scenario (see [debate.py](speaker_selection/debate.py)) using Mixtral and various other local LLMs to get the LLM to return the name of the next agent/role consistently.
+Currently testing with a "Group Chat" debating scenario (see [debate.py](speaker_selection/debate.py)) that was created by tevslin (see his [repository](https://github.com/tevslin/debate_team) and [blog post](https://blog.tomevslin.com/2024/02/an-ai-debate.html), thank you!) using Mixtral and various other local LLMs to get the LLM to return the name of the next agent/role consistently. This is a good test because it involves an LLM understanding an order of agents, reviewing where the debate is up to and determining the next agent. We could almost do this in a round-robin format, or a finite state machine (where we set who can talk to who), but it's important to be able to prompt an LLM to pick the right, next, agent.
 
-I'll put any findings in here.
+I'll put any findings in this README. Please note that this is evolving and I'm just one person trying to make things work :).
 
 ### LLMs I'm trying
 - Llama2 13B Chat
@@ -22,22 +22,35 @@ I'll put any findings in here.
 
 I'm using Ollama when testing against AutoGen libraries and with LiteLLM when testing through AutoGenStudio.
 
+The code I'm currently testing with is in [Mixtral Speaker Selection - Debate](speaker_selection/agent_prompt_testing%20Debate%20P3%20Mixtral.py).
+
 Learnings to date:
 
 ### LLMs differ
-Results differ significantly between LLMs, unsurprisingly, however tweaking prompts was changing the way they behaved independently - e.g. Changing a word or two in a prompt would mean that Mistral 7B, which had been producing the right outcome, would produce something unexpected. That same change would mean that Solar 10.7B, which wasn't producing what I wanted, would all of a sudden be generating the correct outcome.
+Results differ significantly between LLMs, unsurprisingly. However, tweaking prompts was changing the way they behaved independently - e.g. Changing a word or two in a prompt would mean that Mistral 7B, which had been producing the right outcome, would produce something unexpected but that same change would mean that Solar 10.7B, which wasn't producing what I wanted, would all of a sudden be generating the correct outcome.
 
-So, at this stage I believe we'll need to tailor a lot of the prompts (both the ones we can control through agent descriptions and system messages, through to the underlying prompts such as the speaker selection) to suit the LLMs we are using. That is until a minimum standard can be achieved.
+So, at this stage I believe we'll need to tailor a lot of the prompts (both the ones we can control through agent descriptions and system messages, through to the underlying prompts such as the speaker selection) to suit the LLMs we are using. That is until a minimum LLM standard of reasoning can be achieved.
 
-### Temperature
+### Temperature = 0
 I learnt quickly that to get consistent outcomes, at least for the speaker selection prompt, I had to set the temperature to zero (may work with low numbers rather than just zero). Although, even at zero, the responses do vary at times they are generally consistent.
 
 The ability to be able to set the temperature for models in AutoGen is important for these small LLMs.
 
 ### Context length
-As the chat messages continue to grow in number, so too does the chance that a model will stop producing good responses. Some, like Phi-2 with a 2K context length, would stop generating outcomes less than halfway through my testing with the debate group chat. Others, including Mixtral 8x7B with 32K context window, showed improvement when context lengths were reduced (well before the content was that long).
+As the chat messages continue to grow in number, so too does the chance that a model will stop producing good responses. Some, like Phi-2 with a 2K context length, would stop generating outcomes less than halfway through my testing with the debate group chat. Others, including Mixtral 8x7B with a 32K context window, showed improvement when context lengths were reduced (well before the content was that long).
+
+An example of this, with Mixtral, is that when the full chat message passed to Mixtral was less than 8,700 characters (not tokens, I couldn't get that figure) it would return the correct answer (consistently up to that character count). When it was above 8,700 characters it would not follow directions and instead of returning the next speaker's name it would debate as them. This was a consistent issue as the length continued to increase beyond 8,700. I imagine other models this switching point would be lower still.
 
 At the moment there doesn't seem to be a mechanism for compressing the conversation history, however I think this could be useful to keep the context of the full chat as more chatting occurs.
+
+### Reducing chat message length
+With the challenge of minimising context length I thought of two options:
+1. Removing the content of an agent's message if we don't need it for speaker selection
+2. Summarising the content of an agent's message so we keep the general context - this works with a few messages but as the number of messages increase the summaries may still be too much. 
+
+We could, I guess, combine the two options, removing the content of older messages and summarising the more recent ones.
+
+For the speaker selection testing I'm doing, removing the context and summarising the agent messages both worked and produced the correct results. This is promising.
 
 ### Speaker Selection (Auto mode) in a Group Chat
 I've been focusing on testing this as it's critical to having agents selected correctly. This task, which is largely done in the underlying AutoGen code, is tailored to Open AI's ChatGPT. The prompt it generates likely works with other very large models, too. However, controlling this prompt is necessary to provide the specific direction for our smaller local LLMs.
@@ -62,6 +75,26 @@ return only the name of the role
 ```
 changed the response to an incorrect one for Mixtral but to a correct one for Llama 13B.
 
+
+### Who's really speaking?
+With the debating test there's an introducting chat message (this is a role play game, ...) and then a chat message for each of the debaters. We pass all these chat messages to the LLM to determine the next speaker during the speaker selection process.
+
+The chat message for each debater has the content (their debate response), the role ("user"), and name (their agent name), like this:
+```
+    {
+        "content": "<a whole lot of content here.>",
+        "role": "user",
+        "name": "Affirmative_Constructive_Debater",
+    },
+```
+
+As that all gets passed to the LLM I thought it would use that ```name``` key/value to know which agent that message came from.
+
+Interestingly, if I added the following to the start of the content for each of those messages
+```
+I am <the debater's name here>. <then the original content goes next>
+```
+... Mixtral was much better at picking up who has spoken and choosing the next agent. Therefore, it may be advantageous to insert this explicitly at the start of each agent's message so we are sure that the LLM knows who the agent was. Or, at least in this case where the name of the agent is important to determine the sequence.
 
 ### Plain text outputs
 Most models returned plain text responses and this is important for matching agent names to the text returned from the LLM.
