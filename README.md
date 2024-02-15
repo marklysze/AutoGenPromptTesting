@@ -86,3 +86,27 @@ I tried to change prompts to get Mixtral to provide a plain text output but coul
 Perhaps a tactic here is not to use underscores, though I think it has been mentioned to avoid spaces in agent names and use underscores instead, so it's worth tackling this.
 
 Changes to the matching code to accommodate `\_` and spaces for underscores would go a long way to supporting local LLMs who may mix these up.
+
+### So, what do I think are the best local LLMs to use?
+As a caveat, I'm early into my testing and I've only been testing on the speaker selection prompting. Although this is critical to the multi-agent process, there are lots of other aspects of LLMs (quality responses, code generation, function calling, etc.) that I have not even touched.
+
+So, my notes below are on early testing of LLMs choosing the correct next agent and returning its name. I'll put them in my order of preference.
+
+Lastly, a lot of it is promping skills and I'm no expert :).
+
+| LLM | Thoughts |
+| --- | --- |
+| Mixtral 8x7B v0.1 Instruct (Q4) | As the biggest model I expected this to handle direction better than the others. My experience has been that it provides consistent responses and with a few prompt changes you can wrangle it to get the outcome you need. It does have an odd quirk in that it responds in markdown format sometimes. |
+| Mistral 7B v0.2 Instruct | Originally this provided the best responses, plain text outcomes and the ability to return a single agent name without going off course. Prompting showed that it was quite sensitive to prompt changes. It doesn't always understand the directions, though, well not as well as Mixtral | 
+| Llama2 13B Chat | Hit and miss, when it was on point it was perfect, otherwise it just wasn't. More prompt tweaking could work here. |
+| SOLAR 10.7B Instruct | As prompts were tweaked this became more and more consistent |
+| Neural Chat 7B | Similar to Llama 13B, was excellent at times but anything but at others |
+| OpenHermes 7B Mistral v2.5 (Q6) | In one test it was perfect, for all the rest it bombed. Found that it didn't follow directions well. |
+| Orca 2 13B | Only completed one test well, didn't follow directions well for the rest |
+| Qwen 14B Chat (Q6) | I had not used this model before and was hopefully, but it never passed a test and following directions wasn't its forte. |
+| Phi-2 | Unfortunately the context length supported by this model quickly ran out. Additionally, it really didn't follow the directions precisely. |
+| Yi-34B Chat (Q3) | This surprised me, it really was the worst of the bunch. I'm ranking it below Phi-2 as it is too large to be this bad at following directions. Perhaps an Instruct / Other version would be better. |
+
+See more information in one of my [prompt findings](speaker_selection/PromptFindings.txt) documents that shows how I iterated through prompts and what the effect was on each of the LLMs' responses.
+
+Have you used other models that do follow directions well, please let me know!

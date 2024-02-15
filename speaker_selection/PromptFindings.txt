@@ -76,7 +76,7 @@ chat_messages=[
     - phi-2 - Poor 0/0/10 - ignored direction and debated
     - Solar:10.7b-instruct - Poor 0/0/5 - Chose incorrect agent.
     - Qwen:14b-chat - Poor 0/0/10 - ignored direction and debateds
-    WINNERS - 
+    WINNERS - Mistral 7B, Mixtral, Neural Chat, Orca 2, and Llama 13B
 
 ---
 
@@ -140,7 +140,7 @@ chat_messages=[
     - phi-2 - Poor 0/0/5 - Returned blanks
     - Solar:10.7b-instruct - Very good 5/0/5 - correct
     - Qwen:14b-chat - Poor 0/0/5 - Chose the correct agent but debated as it instead
-    WINNERS - 
+    WINNERS - Mixtral, Mistral 7B, Solar 10.7B
 
 - Temp=0, emphasized with capitals the exact order and considering the next role, example output still there.
     - yi:34b-chat-q3_K_M - Poor 0/0/10
@@ -153,9 +153,11 @@ chat_messages=[
     - phi-2 - Poor 0/0/5 - Returned blanks
     - Solar:10.7b-instruct - Very good 10/0/10 - All right
     - Qwen:14b-chat - Poor 0/0/10 - Chose the correct agent but debated as it instead
-    WINNERS - 
+    WINNERS - Mixtral, Solar 10.7B, Llama 13B
 
-- ABCD
+---
+
+- MODELS
     - yi:34b-chat-q3_K_M -
     - mixtral:8x7b-instruct-v0.1-q4_K_M -
     - llama13b-chat - 
