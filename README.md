@@ -16,6 +16,7 @@ I'll put any findings in this README. Please note that this is evolving and I'm 
 - OpenHermes 7B Mistral v2.5 (Q6)
 - Orca 2 13B
 - Phi-2
+- Phind CodeLlama 34B v2
 - Qwen 14B Chat (Q6)
 - SOLAR 10.7B Instruct
 - Yi-34B Chat (Q3)
@@ -138,6 +139,7 @@ Lastly, a lot of it is promping skills and I'm no expert :).
 | Orca 2 13B | Only completed one test well, didn't follow directions well for the rest |
 | Qwen 14B Chat (Q6) | I had not used this model before and was hopefully, but it never passed a test and following directions wasn't its forte. |
 | Phi-2 | Unfortunately the context length supported by this model quickly ran out. Additionally, it really didn't follow the directions precisely. |
+| Phind CodeLlama 34B | Surprisingly good! Up with Mixtral |
 | Yi-34B Chat (Q3) | This surprised me, it really was the worst of the bunch. I'm ranking it below Phi-2 as it is too large to be this bad at following directions. Perhaps an Instruct / Other version would be better. |
 
 See more information in one of my [prompt findings](speaker_selection/PromptFindings.txt) documents that shows how I iterated through prompts and what the effect was on each of the LLMs' responses.
@@ -145,10 +147,10 @@ See more information in one of my [prompt findings](speaker_selection/PromptFind
 Have you used other models that do follow directions well, please let me know!
 
 ### Hold up, what about after we address all these challenges?
-Implementing some of these (temp=0, summarising, cleaning agent names, changing role selection prompt) I was able to get Mixtral to choose the right agent every time during speaker selection (5 sequences with 10 iterations each). :fireworks:
+Implementing some of these (temp=0, summarising, cleaning agent names, changing role selection prompt) meant I was able to get Mixtral to choose the right agent every time during speaker selection (5 sequences with 10 iterations each). :fireworks:
 
-Without tuning the prompts to these other models:
-- Mistral 7B and Solar 10.7B to successfully pass 4 of the 5 agent selection tests.
+Without tuning the prompts specifically to these other models:
+- Mistral 7B and Solar 10.7B successfully passed 4 of the 5 agent selection tests.
 - Llama 2 13B passed 3 out of 5 tests.
 
 I believe these are significant because they were less successful before these changes and rather unpredictable.

@@ -1,7 +1,17 @@
-# Phase 3 - Trying various chat messages to get the right outcome
+# Phase 4 - After Mixtral testing we are now going to try variations and different models
 
 from openai import OpenAI
+import logging
 import os
+from datetime import datetime
+
+# Get the current date and time
+current_datetime = datetime.now()
+logFilename = "testruns/" + current_datetime.strftime("%y-%m-%d-%H-%M-%S") + "-P4Test.log"
+logging.basicConfig(filename=logFilename, level=logging.INFO)
+
+# Disable INFO level messages from the 'httpx' module
+logging.getLogger('httpx').setLevel(logging.WARNING)
 
 # Clear the terminal (Unix/Linux/MacOS)
 os.system('clear')
@@ -11,18 +21,41 @@ client = OpenAI(
     api_key='NotRequired', # required but ignored
 )
 
-chat_sequences = [] # The actual chat context
-correct_agent_sequences = [] # Agent name that it should select
+chat_sequences = [] # Each chat sequence from the first select speaker to the last
+correct_agent_sequences = [] # Agent name that we're expecting back at each point in the sequence
 
-# Standard sequence content
-# This is a shortened version of the original.
-Step_1_Content = "This is a role play game. The following roles are available:\n#1 Debate_Moderator_Agent: Critical thinker, strong analytical skills, ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. Provides constructive feedback without disrupting the flow of the discussion.\n#2 Affirmative_Constructive_Debater: Critical thinker, effective communicator,  can challenge prior assertions, offers clarifications, corrections, or alternative perspectives. possess strong analytical skills to evaluate information and articulate their reasoning clearly. \n#3 Negative_Constructive_Debater: Critical thinker, skilled in analyzing the validity of arguments and information, ability to provide constructive feedback and counterpoints. Strong command of logic, effective communication skills to articulate their critiques clearly, should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding.\n#4 Affirmative_Rebuttal_Debater: Critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. They are articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse.\n#5 Negative_Rebuttal_Debater: Critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\n#6 Debate_Judge: Is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly.\nRoles must be selected in this order:\n1. 'Debate_Moderator_Agent'\n2. 'Affirmative_Constructive_Debater'\n3. 'Negative_Constructive_Debater'\n4. 'Affirmative_Rebuttal_Debater'\n5. 'Negative_Rebuttal_Debater'\n6. 'Debate_Judge'.\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE. FOLLOW THE NUMBERED ORDER OF THE ROLES WHEN SELECTING THE ROLE.\n\nExample output: Affirmative_Constructive_Debater"
+# The introduction message step that should outline the agents and order
+Step_1_Samples = []
+
+# 0: Original
+Step_1_Samples.append("You are in a role play game. The following roles are available:\n#1 Debate_Moderator_Agent: Critical thinker, strong analytical skills, ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. Provides constructive feedback without disrupting the flow of the discussion.\n#2 Affirmative_Constructive_Debater: Critical thinker, effective communicator,  can challenge prior assertions, offers clarifications, corrections, or alternative perspectives. possess strong analytical skills to evaluate information and articulate their reasoning clearly. \n#3 Negative_Constructive_Debater: Critical thinker, skilled in analyzing the validity of arguments and information, ability to provide constructive feedback and counterpoints. Strong command of logic, effective communication skills to articulate their critiques clearly, should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding.\n#4 Affirmative_Rebuttal_Debater: Critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. They are articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse.\n#5 Negative_Rebuttal_Debater: Critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\n#6 Debate_Judge: Is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly.\nRoles must be selected in this order:\n1. 'Debate_Moderator_Agent'\n2. 'Affirmative_Constructive_Debater'\n3. 'Negative_Constructive_Debater'\n4. 'Affirmative_Rebuttal_Debater'\n5. 'Negative_Rebuttal_Debater'\n6. 'Debate_Judge'.\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. Only return the role.")
+
+# 1: Emphasising following of an order
+Step_1_Samples.append("This is a role play game. The following roles are available:\n#1 Debate_Moderator_Agent: Critical thinker, strong analytical skills, ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. Provides constructive feedback without disrupting the flow of the discussion.\n#2 Affirmative_Constructive_Debater: Critical thinker, effective communicator,  can challenge prior assertions, offers clarifications, corrections, or alternative perspectives. possess strong analytical skills to evaluate information and articulate their reasoning clearly. \n#3 Negative_Constructive_Debater: Critical thinker, skilled in analyzing the validity of arguments and information, ability to provide constructive feedback and counterpoints. Strong command of logic, effective communication skills to articulate their critiques clearly, should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding.\n#4 Affirmative_Rebuttal_Debater: Critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. They are articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse.\n#5 Negative_Rebuttal_Debater: Critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\n#6 Debate_Judge: Is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly.\nRoles must be selected in this order:\n1. 'Debate_Moderator_Agent'\n2. 'Affirmative_Constructive_Debater'\n3. 'Negative_Constructive_Debater'\n4. 'Affirmative_Rebuttal_Debater'\n5. 'Negative_Rebuttal_Debater'\n6. 'Debate_Judge'.\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE. FOLLOW THE NUMBERED ORDER OF THE ROLES WHEN SELECTING THE ROLE.")
+
+# 2: Emphasising following of an order and a one-shot example of output
+Step_1_Samples.append("This is a role play game. The following roles are available:\n#1 Debate_Moderator_Agent: Critical thinker, strong analytical skills, ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. Provides constructive feedback without disrupting the flow of the discussion.\n#2 Affirmative_Constructive_Debater: Critical thinker, effective communicator,  can challenge prior assertions, offers clarifications, corrections, or alternative perspectives. possess strong analytical skills to evaluate information and articulate their reasoning clearly. \n#3 Negative_Constructive_Debater: Critical thinker, skilled in analyzing the validity of arguments and information, ability to provide constructive feedback and counterpoints. Strong command of logic, effective communication skills to articulate their critiques clearly, should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding.\n#4 Affirmative_Rebuttal_Debater: Critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. They are articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse.\n#5 Negative_Rebuttal_Debater: Critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\n#6 Debate_Judge: Is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly.\nRoles must be selected in this order:\n1. 'Debate_Moderator_Agent'\n2. 'Affirmative_Constructive_Debater'\n3. 'Negative_Constructive_Debater'\n4. 'Affirmative_Rebuttal_Debater'\n5. 'Negative_Rebuttal_Debater'\n6. 'Debate_Judge'.\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE. FOLLOW THE NUMBERED ORDER OF THE ROLES WHEN SELECTING THE ROLE.\n\nExample output: Affirmative_Constructive_Debater")
+
+# Select Speaker prompt testing
+Select_Speaker_Samples = []
+
+# 0: Original
+Select_Speaker_Samples.append("Read the above conversation. Then select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. Only return the role.")
+
+# 1: Emphasise next role, sequence, and concise reply
+Select_Speaker_Samples.append("Read the above conversation and select the next role, the list of roles is ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge']. What is the next role in the sequence to speak, answer concisely please?")
+
+# 2: Emphasise with capitals to just return the name
+Select_Speaker_Samples.append("Read the above conversation. Then select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE.")
+
+# 3: Emphasise with capitals to just return the name, reasoning, but don't debate.
+Select_Speaker_Samples.append("Read the above conversation. Then select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE NEXT ROLE AND REASON WHY. DO NOT DEBATE.")
 
 #1 - OUTPUT should be "Affirmative_Constructive_Debater"
 correct_agent_sequences.append("Affirmative_Constructive_Debater")
 chat_messages=[
     {
-        'content': f"{Step_1_Content}", #"You are in a role play game. The following roles are available AND IN CORRECT ORDER:\nDebate_Moderator_Agent: #1 Debate_Moderator_Agent is a critical thinker with strong analytical skills and expertise in Python. They should have the ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. This role requires excellent communication skills to articulate challenges and provide constructive feedback without disrupting the flow of the discussion.\n#2 Affirmative_Constructive_Debater: An affirmative constructive debater is a critical thinker and effective communicator who can challenge prior assertions within the group chat, offering clarifications, corrections, or alternative perspectives. This individual should possess strong analytical skills to evaluate information and the ability to articulate their reasoning clearly. When relevant to a discussion involving Python code, the debater should be capable of reading, understanding, and suggesting improvements to the code, even though coding is not their primary role.\n#3 Negative_Constructive_Debater: The negative constructive debater is a critical thinker skilled in analyzing the validity of arguments and information presented in the group chat, with the ability to provide constructive feedback and counterpoints to enhance discussions. This individual should possess a strong command of logic, effective communication skills to articulate their critiques clearly, and when necessary, proficiency in Python to troubleshoot and suggest improvements to code shared within the group. They should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding or to optimize code functionality.\n#4 Affirmative_Rebuttal_Debater: The affirmative rebuttal debater is a critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. This individual should be articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse. If the debate involves the scrutiny of Python code, they should have a proficient understanding of Python to assess and address potential issues in code-related discussions effectively.\n#5 Negative_Rebuttal_Debater: The negative rebuttal debater is a critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity in group discussions. This individual should be proficient in Python for analyzing and correcting any flawed code shared within the chat. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\n#6 Debate_Judge: Debate_Judge is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly. The role may occasionally involve basic Python knowledge to verify and correct code within discussions when relevant to the debate. The correct role order is 1. 'Debate_Moderator_Agent'\n2. 'Affirmative_Constructive_Debater'\n3. 'Negative_Constructive_Debater'\n4. 'Affirmative_Rebuttal_Debater'\n5. 'Negative_Rebuttal_Debater'\n6. 'Debate_Judge'.\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE. FOLLOW THE NUMBERED ORDER OF THE ROLES WHEN SELECTING THE ROLE.\n\nExample output: Affirmative_Constructive_Debater",
+        'content': "<Will be replaced by <Step_1_Samples>",
         'role': 'system'
     },
     {
@@ -32,21 +65,17 @@ chat_messages=[
     },
     {
         'role': 'system',
-#        'content': "Read the above conversation. Then select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE."
-        'content': "Read the above conversation and select the next role, the list of roles is ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge']. What is the next role to speak, answer concisely please?"
+        'content': "<Will be replaced by <Select_Speaker_Samples>",
     }
 ]
 
 chat_sequences.append(chat_messages)
 
 #2 - OUTPUT should be "Negative_Constructive_Debater"
-# Carried forward the content from the first sequence
-# Mixtral started to output the correct name without the escaped underscores, maybe the longer context worked.
-# Correctly identified the next in sequence
 correct_agent_sequences.append("Negative_Constructive_Debater")
 chat_messages = [
     {
-        'content': f"{Step_1_Content}", #"You are in a role play game. The following roles are available AND IN CORRECT ORDER:\nDebate_Moderator_Agent: #1 Debate_Moderator_Agent is a critical thinker with strong analytical skills and expertise in Python. They should have the ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. This role requires excellent communication skills to articulate challenges and provide constructive feedback without disrupting the flow of the discussion.\n#2 Affirmative_Constructive_Debater: An affirmative constructive debater is a critical thinker and effective communicator who can challenge prior assertions within the group chat, offering clarifications, corrections, or alternative perspectives. This individual should possess strong analytical skills to evaluate information and the ability to articulate their reasoning clearly. When relevant to a discussion involving Python code, the debater should be capable of reading, understanding, and suggesting improvements to the code, even though coding is not their primary role.\n#3 Negative_Constructive_Debater: The negative constructive debater is a critical thinker skilled in analyzing the validity of arguments and information presented in the group chat, with the ability to provide constructive feedback and counterpoints to enhance discussions. This individual should possess a strong command of logic, effective communication skills to articulate their critiques clearly, and when necessary, proficiency in Python to troubleshoot and suggest improvements to code shared within the group. They should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding or to optimize code functionality.\n#4 Affirmative_Rebuttal_Debater: The affirmative rebuttal debater is a critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. This individual should be articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse. If the debate involves the scrutiny of Python code, they should have a proficient understanding of Python to assess and address potential issues in code-related discussions effectively.\n#5 Negative_Rebuttal_Debater: The negative rebuttal debater is a critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity in group discussions. This individual should be proficient in Python for analyzing and correcting any flawed code shared within the chat. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\n#6 Debate_Judge: Debate_Judge is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly. The role may occasionally involve basic Python knowledge to verify and correct code within discussions when relevant to the debate. The correct role order is 1. 'Debate_Moderator_Agent'\n2. 'Affirmative_Constructive_Debater'\n3. 'Negative_Constructive_Debater'\n4. 'Affirmative_Rebuttal_Debater'\n5. 'Negative_Rebuttal_Debater'\n6. 'Debate_Judge'.\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE. FOLLOW THE NUMBERED ORDER OF THE ROLES WHEN SELECTING THE ROLE.\n\nExample output: Affirmative_Constructive_Debater",
+        'content': "<Will be replaced by <Step_1_Samples>",
         'role': 'system'
     },
     {
@@ -61,23 +90,16 @@ chat_messages = [
     },
     {
         'role': 'system',
-#        'content': "Read the above conversation. Then select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE."
-        'content': "Read the above conversation and select the next role, the list of roles is ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge']. What is the next role to speak, answer concisely please?"
+        'content': "<Will be replaced by <Select_Speaker_Samples>",
     },
 ]
 chat_sequences.append(chat_messages)
 
 #3 - OUTPUT should be "Affirmative_Rebuttal_Debater"
-# Carried forward the content from the first and second sequences
-# The length of the whole sequence resulting in a mix of different results, not just agent names but debating as well. Reducing the first message content made a significant difference in that it start to just return the agent names (rather than trying to debate), though they weren't correct until we asked them to explain why
-# Asking it to return the name of the next role AND WHY resulted in it choosing the right role but with the reasoning added. So changing "RETURN ONLY THE NAME OF THE NEXT ROLE." to "RETURN ONLY THE NAME OF THE NEXT ROLE AND REASON WHY." resulted in it returning the correct result (just with the extra text). Had to have "REASON WHY" and not just "WHY" to get a consistent output. Changing this in the previous sequences does not work - argh.
-# Q4 and Q5 versions of Mixtral were producing the same result.
-# Interestingly, if I ran the first three sequences in a row with the same LLM model this third sequence would return the wrong agent role. However, if I ran the first two with an LLM model and then changed the third one it would return the correct result. Caching issue?!?
 correct_agent_sequences.append("Affirmative_Rebuttal_Debater")
 chat_messages = [
-    # MS Reducing content to see if context length is an issue.
     {
-        'content': f"{Step_1_Content}", #"This is a role play game. The following roles are available:\n#1 Debate_Moderator_Agent: Critical thinker, strong analytical skills, ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. Provides constructive feedback without disrupting the flow of the discussion.\n#2 Affirmative_Constructive_Debater: Critical thinker, effective communicator,  can challenge prior assertions, offers clarifications, corrections, or alternative perspectives. possess strong analytical skills to evaluate information and articulate their reasoning clearly. \n#3 Negative_Constructive_Debater: Critical thinker, skilled in analyzing the validity of arguments and information, ability to provide constructive feedback and counterpoints. Strong command of logic, effective communication skills to articulate their critiques clearly, should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding.\n#4 Affirmative_Rebuttal_Debater: Critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. They are articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse.\n#5 Negative_Rebuttal_Debater: Critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\n#6 Debate_Judge: Is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly.\nRoles must be selected in this order:\n1. 'Debate_Moderator_Agent'\n2. 'Affirmative_Constructive_Debater'\n3. 'Negative_Constructive_Debater'\n4. 'Affirmative_Rebuttal_Debater'\n5. 'Negative_Rebuttal_Debater'\n6. 'Debate_Judge'.\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE. FOLLOW THE NUMBERED ORDER OF THE ROLES WHEN SELECTING THE ROLE.\n\nExample output: Affirmative_Constructive_Debater",
+        'content': "<Will be replaced by <Step_1_Samples>",
         'role': 'system'
     },
     {
@@ -97,38 +119,16 @@ chat_messages = [
     },
     {
         'role': 'system',
-#        'content': "Read the above conversation. Then select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE NEXT ROLE AND REASON WHY. DO NOT DEBATE."
-        'content': "Read the above conversation and select the next role, the list of roles is ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge']. What is the next role to speak, answer concisely please?"
+        'content': "<Will be replaced by <Select_Speaker_Samples>",
     },
 ]
 chat_sequences.append(chat_messages)
 
 #4 - OUTPUT should be "Negative_Rebuttal_Debater"
-# Initial runs without changes (just adding in the Affirmative_Rebuttal_Debater's chat) had Mixtral debate as the correct next agent rather than just return the name
-# If I reduce the content for the debaters back to 300 characters each, for a total of about 4,500 characters, it produces the correct output
-# Here's testing different character lengths:
-    # 10,991 - Fails, instead of just returning the agent name (which it got right), it debates as them.
-    # 9,434 - Fails, instead of just returning the agent name (which it got right), it debates as them.
-    # 6,244 - Chooses the correct one but in a long sentence that includes the previous one, so it would not be selected correctly by AutoGen
-    # 4,910 - Gave just the agent name, but it was wrong.
-    # 4,154 - Gave the correct agent as the first agent in the response, but did include the previous agent's name later in the sentence.
-    # 3,705 - Gave just the agent name, but it was wrong.
-# I changed the three existing debater's comment to just "I am <the debater's name here> and I have spoken.", then it returned the correct response!
-# I changed the three existing debater's comment to just "<the debater's name here>", then it returned the correct response!
-# I changed the three existing debater's comment to blanks (""), and it didn't return the correct response. Perhaps it doesn't see the name key/value for the chat messages.
-# I changed the three existing debater's comment to "I am <the debater's name here>." + the first 500 characters from their comment (total 5,020 characters) and it worked perfectly
-# I changed the three existing debater's comment to "I am <the debater's name here>." + the first 1,000 characters from their comment (total 6,528 characters) and it worked perfectly
-# I changed the three existing debater's comment to "I am <the debater's name here>." + the first 1,500 characters from their comment (total 8,036 characters) and it worked perfectly
-# I changed the three existing debater's comment to "I am <the debater's name here>." + the first 1,650 characters from their comment (total 8,488 characters) and it worked perfectly
-# I changed the three existing debater's comment to "I am <the debater's name here>." + the first 1,700 characters from their comment (total 8,638 characters) and it worked perfectly
-# I changed the three existing debater's comment to "I am <the debater's name here>." + the first 1,750 characters from their comment (total 8,788 characters) and it failed by debating as the agent.
-# I changed the three existing debater's comment to "I am <the debater's name here>." + the first 2,000 characters from their comment (total 9,544 characters) and it failed by debating as the agent.
-# Moving on to summarising
-# Summarising the content for the debaters shaved off more than 40% (11K down to 6K) of the characters so we were able to get the whole message sequence to the LLM and get the correct output.
 correct_agent_sequences.append("Negative_Rebuttal_Debater")
 chat_messages = [
     {
-        'content': f"{Step_1_Content}", #"This is a role play game. The following roles are available:\n#1 Debate_Moderator_Agent: Critical thinker, strong analytical skills, ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. Provides constructive feedback without disrupting the flow of the discussion.\n#2 Affirmative_Constructive_Debater: Critical thinker, effective communicator,  can challenge prior assertions, offers clarifications, corrections, or alternative perspectives. possess strong analytical skills to evaluate information and articulate their reasoning clearly. \n#3 Negative_Constructive_Debater: Critical thinker, skilled in analyzing the validity of arguments and information, ability to provide constructive feedback and counterpoints. Strong command of logic, effective communication skills to articulate their critiques clearly, should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding.\n#4 Affirmative_Rebuttal_Debater: Critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. They are articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse.\n#5 Negative_Rebuttal_Debater: Critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\n#6 Debate_Judge: Is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly.\nRoles must be selected in this order:\n1. 'Debate_Moderator_Agent'\n2. 'Affirmative_Constructive_Debater'\n3. 'Negative_Constructive_Debater'\n4. 'Affirmative_Rebuttal_Debater'\n5. 'Negative_Rebuttal_Debater'\n6. 'Debate_Judge'.\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE. FOLLOW THE NUMBERED ORDER OF THE ROLES WHEN SELECTING THE ROLE.\n\nExample output: Affirmative_Constructive_Debater",
+        'content': "<Will be replaced by <Step_1_Samples>",
         'role': 'system'
     },
     {
@@ -153,8 +153,7 @@ chat_messages = [
     },
     {
         'role': 'system',
-#        'content': "Read the above conversation. Then select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE NEXT ROLE AND REASON WHY. DO NOT DEBATE."
-        'content': "Read the above conversation and select the next role, the list of roles is ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge']. What is the next role in the sequence to speak, answer concisely please?"
+        'content': "<Will be replaced by <Select_Speaker_Samples>",
     },
 ]
 chat_sequences.append(chat_messages)
@@ -164,7 +163,7 @@ chat_sequences.append(chat_messages)
 correct_agent_sequences.append("Debate_Judge")
 chat_messages = [
     {
-        'content': f"{Step_1_Content}", #"This is a role play game. The following roles are available:\n#1 Debate_Moderator_Agent: Critical thinker, strong analytical skills, ability to identify inaccuracies or questionable statements within a group chat and offer clear, well-reasoned corrections or alternative viewpoints. Provides constructive feedback without disrupting the flow of the discussion.\n#2 Affirmative_Constructive_Debater: Critical thinker, effective communicator,  can challenge prior assertions, offers clarifications, corrections, or alternative perspectives. possess strong analytical skills to evaluate information and articulate their reasoning clearly. \n#3 Negative_Constructive_Debater: Critical thinker, skilled in analyzing the validity of arguments and information, ability to provide constructive feedback and counterpoints. Strong command of logic, effective communication skills to articulate their critiques clearly, should be allowed to speak when inconsistencies or errors are identified, to refine the group's understanding.\n#4 Affirmative_Rebuttal_Debater: Critical thinker skilled in analyzing statements, identifying inaccuracies or fallacies in arguments, and providing well-reasoned counterpoints or corrected information when necessary. They are articulate, possess strong research skills to substantiate their rebuttals, and be adept at remaining respectful and constructive during discourse.\n#5 Negative_Rebuttal_Debater: Critical thinker skilled in logic, reasoning, and effective communication who can articulate clear counterarguments to ensure accuracy and validity. They should intervene when misinformation is presented, questionable claims arise, or when there is a need to clarify and rectify coding errors.\n#6 Debate_Judge: Is an analytical and impartial individual adept at evaluating arguments, assessing evidence, and providing constructive feedback. They possess strong critical thinking skills and effective communication abilities to articulate their judgments clearly.\nRoles must be selected in this order:\n1. 'Debate_Moderator_Agent'\n2. 'Affirmative_Constructive_Debater'\n3. 'Negative_Constructive_Debater'\n4. 'Affirmative_Rebuttal_Debater'\n5. 'Negative_Rebuttal_Debater'\n6. 'Debate_Judge'.\n\nRead the following conversation.\nThen select the next role from ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge'] to play. RETURN ONLY THE NAME OF THE ROLE. FOLLOW THE NUMBERED ORDER OF THE ROLES WHEN SELECTING THE ROLE.\n\nExample output: Affirmative_Constructive_Debater",
+        'content': "<Will be replaced by <Step_1_Samples>",
         'role': 'system'
     },
     {
@@ -194,13 +193,14 @@ chat_messages = [
     },
     {
         'role': 'system',
-        'content': "Read the above conversation and select the next role, the list of roles is ['Debate_Moderator_Agent', 'Affirmative_Constructive_Debater', 'Negative_Constructive_Debater', 'Affirmative_Rebuttal_Debater', 'Negative_Rebuttal_Debater', 'Debate_Judge']. What is the next role in the sequence to speak, answer concisely please?"
+        'content': "<Will be replaced by <Select_Speaker_Samples>",
     },
 ]
 chat_sequences.append(chat_messages)
 
 ### Summarising chats to save context space
-# Summarise the previous debater's chats for #4 so we don't hit character/token points that cause it to fail
+
+# Summarise the previous debater's chats from #3 onward to try and minimise having too many tokens in the prompt
 
 summarising_template = [
     {
@@ -215,6 +215,8 @@ summarising_template = [
 
 agents_to_summarise = ["Affirmative_Constructive_Debater", "Negative_Constructive_Debater", "Affirmative_Rebuttal_Debater", "Negative_Rebuttal_Debater"]
 summarised_content = []
+'''
+# UNCOMMENT THIS SECTION TO REGENERATE THE SUMMARISED VERSIONS
 for index, chat_message in enumerate(chat_messages):
     
     summary_text = ""
@@ -240,15 +242,150 @@ for index, chat_message in enumerate(chat_messages):
         print(f"Summarised #{index} from {len(str(chat_message['content']))} to {len(summary_text)} characters")
 
     summarised_content.append({index: summary_text})
+'''
 
-# print(chat_messages)
+# Pre-run summarised values:
+summarised_content.append({0: ""})
+summarised_content.append({1: ""})
+summarised_content.append({2: "I am Affirmative_Constructive_Debater. - The user will argue in favor of the Earth being an oblate spheroid, using traveler's observations, satellite imagery, and gravity measurements as evidence.\n- They will address potential counterarguments, such as the horizon illusion and misconceptions from the Bedford Level Experiment.\n- Their goal is to create a solid foundation for their team's argument that opposing teams must acknowledge."})
+summarised_content.append({3: "I am Negative_Constructive_Debater. 1. Early explorations mainly near equator, might not have noticed Earth's bulge. Eratosthenes' measurement has margin of error due to assumptions.\n2. Satellite images can be misleading as wide-angle lenses and specific projection techniques may distort straight lines like the horizon.\n3. Gravity measurements don't conclusively prove an oblate spheroid Earth; alternative explanations exist for gravity variations.\n4. The Bedford Level Experiment, despite its limitations, suggests alternative explanations for the horizon illusion, such as atmospheric refraction or mirages.\n5. Aim is not to claim Earth is flat but to question assumptions and potential weaknesses in Affirmative_Constructive_Debater's arguments. Further discussion and evidence are needed for a conclusive understanding of Earth's shape."})
+summarised_content.append({4: "I am Affirmative_Rebuttal_Debater. The user, Negative_Constructive_Debater, raised points refuted by Affirmative_Rebuttal_Debater:\n1. Early explorers observed latitude/longitude changes, impossible on a flat Earth. Eratosthenes' measurement was impressively accurate; other ancient scholars confirmed a round Earth.\n2. Satellite imagery shows Earth as sphere despite minor distortion from lenses and projections. Multiple images validate the spherical shape.\n3. Gravity measurements support an oblate spheroid model when combined with satellite imagery and traveler's observations. Density variations don't fully explain all gravity anomalies.\n4. The Bedford Level Experiment, affected by atmospheric refraction and mirages, doesn't prove a spherical Earth; its limited distance reduces its applicability.\nAffirmative_Rebuttal_Debater concludes that evidence supports the oblate spheroid model for Earth's shape."})
+summarised_content.append({5: "I am Negative_Rebuttal_Debater. The user argues against focusing solely on mitigating climate change effects in Vermont, advocating for prevention as well. They mention:\n\n1. Cumulative effect of small contributions to global emissions.\n2. Prevention can reduce the need for mitigation in the long term and provide more sustainable benefits.\n3. Investing in renewable energy and efficiency leads to long-term economic advantages, like energy independence and lower costs.\n4. Preventive measures can also prioritize social equity through energy efficiency programs and job creation in disadvantaged areas.\n5. Prevention encourages innovation in renewable energy and energy efficiency technologies.\n6. Global responsibility includes local action in prevention, not just mitigation. Vermont should balance both approaches for ethical obligations, long-term economic benefits, and global contribution to combat climate change."})
+summarised_content.append({6: ""})
 
-models = ["mixtralq4"] # ["yi:34b-chat-q3_K_M", "mixtralcopy", "llama2:13b-chat", "mistral:7b-instruct-q6_K", "neural-chat:7b-v3.3-q6_K", "openhermes:7b-mistral-v2.5-q6_K", "orca2:13b-q5_K_S", "phi:latest", "solar:10.7b-instruct-v1-q5_K_M", "qwen:14b-chat-q6_K"]
+summarised_dict = {}
+summarised_dict["Affirmative_Constructive_Debater"] = "I am Affirmative_Constructive_Debater. - The user will argue in favor of the Earth being an oblate spheroid, using traveler's observations, satellite imagery, and gravity measurements as evidence.\n- They will address potential counterarguments, such as the horizon illusion and misconceptions from the Bedford Level Experiment.\n- Their goal is to create a solid foundation for their team's argument that opposing teams must acknowledge."
+summarised_dict["Negative_Constructive_Debater"] = "I am Negative_Constructive_Debater. 1. Early explorations mainly near equator, might not have noticed Earth's bulge. Eratosthenes' measurement has margin of error due to assumptions.\n2. Satellite images can be misleading as wide-angle lenses and specific projection techniques may distort straight lines like the horizon.\n3. Gravity measurements don't conclusively prove an oblate spheroid Earth; alternative explanations exist for gravity variations.\n4. The Bedford Level Experiment, despite its limitations, suggests alternative explanations for the horizon illusion, such as atmospheric refraction or mirages.\n5. Aim is not to claim Earth is flat but to question assumptions and potential weaknesses in Affirmative_Constructive_Debater's arguments. Further discussion and evidence are needed for a conclusive understanding of Earth's shape."
+summarised_dict["Affirmative_Rebuttal_Debater"] = "I am Affirmative_Rebuttal_Debater. The user, Negative_Constructive_Debater, raised points refuted by Affirmative_Rebuttal_Debater:\n1. Early explorers observed latitude/longitude changes, impossible on a flat Earth. Eratosthenes' measurement was impressively accurate; other ancient scholars confirmed a round Earth.\n2. Satellite imagery shows Earth as sphere despite minor distortion from lenses and projections. Multiple images validate the spherical shape.\n3. Gravity measurements support an oblate spheroid model when combined with satellite imagery and traveler's observations. Density variations don't fully explain all gravity anomalies.\n4. The Bedford Level Experiment, affected by atmospheric refraction and mirages, doesn't prove a spherical Earth; its limited distance reduces its applicability.\nAffirmative_Rebuttal_Debater concludes that evidence supports the oblate spheroid model for Earth's shape."
+summarised_dict["Negative_Rebuttal_Debater"] = "I am Negative_Rebuttal_Debater. The user argues against focusing solely on mitigating climate change effects in Vermont, advocating for prevention as well. They mention:\n\n1. Cumulative effect of small contributions to global emissions.\n2. Prevention can reduce the need for mitigation in the long term and provide more sustainable benefits.\n3. Investing in renewable energy and efficiency leads to long-term economic advantages, like energy independence and lower costs.\n4. Preventive measures can also prioritize social equity through energy efficiency programs and job creation in disadvantaged areas.\n5. Prevention encourages innovation in renewable energy and energy efficiency technologies.\n6. Global responsibility includes local action in prevention, not just mitigation. Vermont should balance both approaches for ethical obligations, long-term economic benefits, and global contribution to combat climate change."
 
-for modelName in models:
+# print(summarised_content)
 
-    print(f"MODEL: {modelName}\n\n")    
+# The tests we want to perform on the speaker's content to see the effect of prompt length and content of their text
+context_reduction_test = ["Unchanged", "300 Characters", "100 Characters and Name", "Only Speaker Name", "Summarised"]
 
+test_iterations = 1 # Let's do one for now
+
+# Tests we will run, cascaded:
+# Each Model
+    # Each Step 1 prompt (3 variations)
+        # Each Select Speaker prompt (4 variations)
+            # Each Context Reduction test (5 variations)
+                # Chat Sequence (5)
+                    # Test iteration (4)
+
+# Results in 300 variations per model for each iteration
+# 10 models = 3000 runs for each iteration
+
+# DONE "llama2:13b-chat", "mistral:7b-instruct-q6_K", "mixtralq4", 
+# DONE "neural-chat:7b-v3.3-q6_K",  crashing after a number of tests, rerun successfully.
+# DONE "openhermes:7b-mistral-v2.5-q6_K", "orca2:13b-q5_K_S", 
+# CAN'T RUN THROUGH "phi:latest", crashing after a number of tests, retried no luck
+# DONE "solar:10.7b-instruct-v1-q5_K_M", "qwen:14b-chat-q6_K", "yi:34b-chat-q3_K_M"
+models_in_test = ["phind-codellama:34b-v2"]
+
+logging.info(f"Model Name|Step 1 Prompt|Select Speaker Prompt|Context Reduction|Chat Sequence|Iteration|Outcome = Correct 0 or Correct with Tidy 1 or Exists Within 2 or Failed -1")
+      
+for modelName in models_in_test:
+
+    # print(f"MODEL: {modelName}\n\n")
+
+    for index_step1, content_step1 in enumerate(Step_1_Samples):
+
+        for index_selectSpeaker, content_selectSpeaker in enumerate(Select_Speaker_Samples):
+
+            for index_contextReduction, contextReductionTest in enumerate(context_reduction_test):
+
+                for index_chatSequence, chatSequence in enumerate(chat_sequences):
+
+                    # Step 1 content update
+                    chatSequence[0]["content"] = content_step1
+
+                    # Select Speaker content update
+                    chatSequence[-1]["content"] = content_selectSpeaker
+
+                    # Context Reduction
+                    if not contextReductionTest == "Unchanged":
+
+                        for i in range(2, (len(chatSequence) - 1)):
+
+                            # Only replace the context for the debaters
+                            if "name" in chatSequence[i] and chatSequence[i]["name"] in agents_to_summarise:
+
+                                if contextReductionTest == "300 Characters":
+                                    chatSequence[i]["content"] = chatSequence[i]["content"][:300]
+                                elif contextReductionTest == "100 Characters and Name":
+                                    chatSequence[i]["content"] = f"I am {chatSequence[i]['name']} and I have spoken. {chatSequence[i]['content'][:100]}"
+                                elif contextReductionTest == "Only Speaker Name":
+                                    chatSequence[i]["content"] = f"I am {chatSequence[i]['name']} and I have spoken."
+                                elif contextReductionTest == "Summarised":
+                                    if chatSequence[i]["name"] in summarised_dict:
+                                        chatSequence[i]["content"] = summarised_dict[chatSequence[i]["name"]]
+
+                    # Test time.
+                                        
+                    # Correct Agent
+                    correct_agent = correct_agent_sequences[index_chatSequence]
+                    # logging.info(f"Chat Sequence #{index_chatSequence+1}, Expecting '{correct_agent}'")
+
+                    # Counters
+                    # correctCount = 0
+                    # correctWithTidy = 0
+                    # existsWithin = 0
+
+                    # Loop through and run the chat sequence, checking for the correct agent name
+                    for i in range(test_iterations):
+                        
+                        # if index_step1 == 0 and index_selectSpeaker <= 3 and index_contextReduction <= 2 and index_chatSequence <= 2:
+                            # continue
+
+                        seqlength = len(str(chatSequence))
+
+                        chat_completion = client.chat.completions.create(
+                            messages=chatSequence,
+                            model=modelName,
+                            temperature=0
+                        )
+
+                        responseText = chat_completion.choices[0].message.content
+                        responseText = responseText.strip()
+                        logging.debug(f"[{i}] Response: {responseText}")
+
+                        outcome = -1
+
+                        if responseText == correct_agent:
+                            # correctCount = correctCount + 1
+                            outcome = 0
+                            logging.debug("MATCHED!")
+                        else:
+
+                            tidyName = responseText.replace('\\_', '_')
+                            tidyName = tidyName.replace(" ", "_")
+
+                            if tidyName == correct_agent:
+                                # correctWithTidy = correctWithTidy + 1
+                                outcome = 1
+                            else:
+                                if correct_agent in responseText or correct_agent in tidyName:
+                                    # existsWithin = existsWithin + 1
+                                    outcome = 2
+
+                        print(f"{modelName}|{index_step1}|{index_selectSpeaker}|{index_contextReduction}|{index_chatSequence}|{i}|{outcome}|{seqlength}")
+                        logging.info(f"{modelName}|{index_step1}|{index_selectSpeaker}|{index_contextReduction}|{index_chatSequence}|{i}|{outcome}|{seqlength}")
+
+
+                    # logging.info(f"Model/Sequence - Correct/Correct with Tidy/Exists Within/Iterations | {modelName}/{index+1} - {correctCount}/{correctWithTidy}/{existsWithin}/{iterations}")
+
+                    # logging.info(f"\n--------{chatSequence}\n--------\n")
+
+                # break
+
+            # break
+
+        # break
+
+    # break
+'''
     for index, chat_sequence in enumerate(chat_sequences):
 
         if index < 0:
@@ -313,3 +450,4 @@ for modelName in models:
         print(f"Model/Sequence - Correct/Correct with Tidy/Exists Within/Iterations | {modelName}/{index+1} - {correctCount}/{correctWithTidy}/{existsWithin}/{iterations}")
 
         # break
+'''
