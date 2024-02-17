@@ -23,9 +23,9 @@ I'll put any findings in this README. Please note that this is evolving and I'm 
 
 I'm using Ollama when testing against AutoGen libraries and with LiteLLM when testing through AutoGenStudio.
 
-The code I'm currently testing with is in [Mixtral Speaker Selection - Debate](speaker_selection/agent_prompt_testing%20Debate%20P3%20Mixtral.py).
+The code I'm currently testing with is in [Speaker Selection - Test Rounds](speaker_selection/agent_prompt_testing%20Debate%20P4%20Tests.py).
 
-Current performance for speaker selection on the debate challenge:
+#### Current performance for speaker selection on the debate challenge:
 
 | | Speakers selected correctly |
 | --- | --- |
@@ -58,10 +58,12 @@ Current performance for speaker selection on the debate challenge:
 |Emphasize + Example|	Emphasize, Capitals, Reasoning, No Debating|	None|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:x:|
 |Emphasize + Example|	Emphasize, Capitals, Reasoning, No Debating|	Summarised|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:x:|
 
+**Winners:**
+1. phind-codellama:34b-v2
+2. mixtral:8x7b-instruct-v0.1-q4_K_M
+3. openhermes:7b-mistral-v2.5 (Q6)
 
-
-
-Learnings to date:
+#### Learnings to date:
 
 ### LLMs differ
 Results differ significantly between LLMs, unsurprisingly. However, tweaking prompts was changing the way they behaved independently - e.g. Changing a word or two in a prompt would mean that Mistral 7B, which had been producing the right outcome, would produce something unexpected but that same change would mean that Solar 10.7B, which wasn't producing what I wanted, would all of a sudden be generating the correct outcome.
