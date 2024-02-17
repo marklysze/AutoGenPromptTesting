@@ -28,6 +28,7 @@ The code I'm currently testing with is in [Mixtral Speaker Selection - Debate](s
 Current performance for speaker selection on the debate challenge:
 
 | | Speakers selected correctly |
+| --- | --- |
 | :white_check_mark: | All 5 correct |
 | :large_orange_diamond: | 4 of 5 correct |
 | :x: | 3 or less correct |
