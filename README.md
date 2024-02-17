@@ -36,6 +36,7 @@ Current performance for speaker selection on the debate challenge:
 
 **Step 1 Content**|	**Select Speaker**|	**Context Reduction**|	llama2:13b-chat|	mistral:7b-instruct-q6_K|	mixtralq4|	neural-chat:7b-v3.3-q6_K|	openhermes:7b-mistral-v2.5-q6_K|	orca2:13b-q5_K_S|	phind-codellama:34b-v2|	qwen:14b-chat-q6_K|	solar:10.7b-instruct-v1-q5_K_M|	yi:34b-chat-q3_K_M|
 | --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |
+|Original|	Original|	None|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|
 |Original|	Emphasize, Sequence, Concise|	Summarised|	:x:|	:x:|	:white_check_mark:|	:x:|	:white_check_mark:|	:x:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:x:|
 |Original|	Emphasize, Sequence, Concise|	None|	:x:|	:x:|	:white_check_mark:|	:x:|	:white_check_mark:|	:x:|	:x:|	:x:|	:large_orange_diamond:|	:x:|
 |Emphasize Order|	Emphasize, Sequence, Concise|	None|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:x:|
@@ -56,6 +57,7 @@ Current performance for speaker selection on the debate challenge:
 |Emphasize + Example|	Emphasize, Capitals, Single Word Reply|	Only Speaker Name|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:white_check_mark:|	:x:|
 |Emphasize + Example|	Emphasize, Capitals, Reasoning, No Debating|	None|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:x:|
 |Emphasize + Example|	Emphasize, Capitals, Reasoning, No Debating|	Summarised|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:x:|
+
 
 
 Learnings to date:
