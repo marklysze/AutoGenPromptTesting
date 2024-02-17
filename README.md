@@ -34,29 +34,31 @@ The code I'm currently testing with is in [Speaker Selection - Test Rounds](spea
 | :x: | 3 or less correct |
 
 
-**Step 1 Content**|	**Select Speaker**|	**Context Reduction**|	llama2:13b-chat|	mistral:7b-instruct-q6_K|	mixtral 8x7B (Q4)|	neural-chat:7b-v3.3-q6_K|	openhermes:7b-mistral-v2.5-q6_K|	orca2:13b-q5_K_S|	phind-codellama:34b-v2|	qwen:14b-chat-q6_K|	solar:10.7b-instruct-v1-q5_K_M|	yi:34b-chat-q3_K_M|
-| --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |
-|Original|	Original|	None|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|
-|Original|	Emphasize, Sequence, Concise|	Summarised|	:x:|	:x:|	:white_check_mark:|	:x:|	:white_check_mark:|	:x:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:x:|
-|Original|	Emphasize, Sequence, Concise|	None|	:x:|	:x:|	:white_check_mark:|	:x:|	:white_check_mark:|	:x:|	:x:|	:x:|	:large_orange_diamond:|	:x:|
-|Emphasize Order|	Emphasize, Sequence, Concise|	None|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:x:|
-|Emphasize Order|	Emphasize, Sequence, Concise|	Summarised|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:x:|
-|Emphasize + Example|	Emphasize, Sequence, Concise|	None|	:large_orange_diamond:|	:x:|	:white_check_mark:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:x:|	:x:|
-|Emphasize + Example|	Emphasize, Sequence, Concise|	Summarised|	:large_orange_diamond:|	:x:|	:white_check_mark:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:x:|	:x:|
-|Original|	Original|	Only Speaker Name|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:white_check_mark:|	:x:|	:white_check_mark:|	:x:|
-|Emphasize + Example|	Emphasize, Capitals, Reasoning, No Debating|	First 300 Characters|	:x:|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:x:|	:x:|
-|Emphasize Order|	Emphasize, Sequence, Concise|	First 300 Characters|	:x:|	:x:|	:white_check_mark:|	:large_orange_diamond:|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:x:|
-|Emphasize Order|	Emphasize, Sequence, Concise|	First 100 Chars and Name|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:white_check_mark:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|
-|Emphasize Order|	Emphasize, Sequence, Concise|	Only Speaker Name|	:x:|	:x:|	:white_check_mark:|	:large_orange_diamond:|	:x:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:x:|
-|Emphasize Order|	Emphasize, Capitals, Reasoning, No Debating|	First 300 Characters|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:white_check_mark:|	:x:|	:x:|	:large_orange_diamond:|	:x:|
-|Emphasize + Example|	Emphasize, Sequence, Concise|	First 300 Characters|	:x:|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|
-|Emphasize + Example|	Emphasize, Sequence, Concise|	Only Speaker Name|	:large_orange_diamond:|	:x:|	:white_check_mark:|	:x:|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:x:|
-|Emphasize + Example|	Emphasize, Capitals, Single Word Reply|	Summarised|	:x:|	:x:|	:x:|	:x:|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:x:|	:large_orange_diamond:|	:x:|
-|Emphasize + Example|	Emphasize, Sequence, Concise|	First 100 Chars and Name|	:x:|	:x:|	:white_check_mark:|	:x:|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:x:|
-|Emphasize + Example|	Emphasize, Capitals, Single Word Reply|	None|	:x:|	:x:|	:x:|	:x:|	:x:|	:white_check_mark:|	:x:|	:x:|	:large_orange_diamond:|	:x:|
-|Emphasize + Example|	Emphasize, Capitals, Single Word Reply|	Only Speaker Name|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:white_check_mark:|	:x:|
-|Emphasize + Example|	Emphasize, Capitals, Reasoning, No Debating|	None|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:x:|
-|Emphasize + Example|	Emphasize, Capitals, Reasoning, No Debating|	Summarised|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:x:|
+**Step 1 Content**|	**Select Speaker**|	**Context Reduction**|	phind-codellama:34b-v2|	mixtral 8x7B (Q4)|	openhermes:7b-mistral-v2.5-q6_K|	orca2:13b-q5_K_S|	solar:10.7b-instruct-v1-q5_K_M|	neural-chat:7b-v3.3-q6_K|	llama2:13b-chat|	qwen:14b-chat-q6_K|	mistral:7b-instruct-q6_K|	yi:34b-chat-q3_K_M|	phi-2|
+| --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |
+|Original|	Original|	None|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Original|	Emphasize, Sequence, Concise|	Summarised|	:white_check_mark:|	:white_check_mark:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Original|	Emphasize, Sequence, Concise|	None|	:x:|	:white_check_mark:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize Order|	Emphasize, Sequence, Concise|	None|	:white_check_mark:|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize Order|	Emphasize, Sequence, Concise|	Summarised|	:white_check_mark:|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Sequence, Concise|	None|	:white_check_mark:|	:white_check_mark:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Sequence, Concise|	Summarised|	:white_check_mark:|	:white_check_mark:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Original|	Original|	Only Speaker Name|	:white_check_mark:|	:x:|	:x:|	:x:|	:white_check_mark:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Capitals, Reasoning, No Debating|	First 300 Characters|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:thumbsdown:|
+|Emphasize Order|	Emphasize, Sequence, Concise|	First 300 Characters|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:x:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize Order|	Emphasize, Sequence, Concise|	First 100 Chars and Name|	:white_check_mark:|	:large_orange_diamond:|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize Order|	Emphasize, Sequence, Concise|	Only Speaker Name|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize Order|	Emphasize, Capitals, Reasoning, No Debating|	First 300 Characters|	:x:|	:large_orange_diamond:|	:x:|	:white_check_mark:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Sequence, Concise|	First 300 Characters|	:x:|	:white_check_mark:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Sequence, Concise|	Only Speaker Name|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:x:|	:x:|	:x:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Capitals, Single Word Reply|	Summarised|	:x:|	:x:|	:large_orange_diamond:|	:white_check_mark:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Sequence, Concise|	First 100 Chars and Name|	:large_orange_diamond:|	:white_check_mark:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Capitals, Single Word Reply|	None|	:x:|	:x:|	:x:|	:white_check_mark:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Capitals, Single Word Reply|	Only Speaker Name|	:x:|	:x:|	:x:|	:x:|	:white_check_mark:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Capitals, Reasoning, No Debating|	None|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+|Emphasize + Example|	Emphasize, Capitals, Reasoning, No Debating|	Summarised|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:large_orange_diamond:|	:x:|	:x:|	:x:|	:x:|	:x:|	:thumbsdown:|
+
+
 
 **Winners:**
 1. phind-codellama:34b-v2

@@ -326,19 +326,10 @@ for modelName in models_in_test:
                                         
                     # Correct Agent
                     correct_agent = correct_agent_sequences[index_chatSequence]
-                    # logging.info(f"Chat Sequence #{index_chatSequence+1}, Expecting '{correct_agent}'")
-
-                    # Counters
-                    # correctCount = 0
-                    # correctWithTidy = 0
-                    # existsWithin = 0
 
                     # Loop through and run the chat sequence, checking for the correct agent name
                     for i in range(test_iterations):
                         
-                        # if index_step1 == 0 and index_selectSpeaker <= 3 and index_contextReduction <= 2 and index_chatSequence <= 2:
-                            # continue
-
                         seqlength = len(str(chatSequence))
 
                         chat_completion = client.chat.completions.create(
@@ -354,7 +345,6 @@ for modelName in models_in_test:
                         outcome = -1
 
                         if responseText == correct_agent:
-                            # correctCount = correctCount + 1
                             outcome = 0
                             logging.debug("MATCHED!")
                         else:
@@ -363,20 +353,13 @@ for modelName in models_in_test:
                             tidyName = tidyName.replace(" ", "_")
 
                             if tidyName == correct_agent:
-                                # correctWithTidy = correctWithTidy + 1
                                 outcome = 1
                             else:
                                 if correct_agent in responseText or correct_agent in tidyName:
-                                    # existsWithin = existsWithin + 1
                                     outcome = 2
 
                         print(f"{modelName}|{index_step1}|{index_selectSpeaker}|{index_contextReduction}|{index_chatSequence}|{i}|{outcome}|{seqlength}")
                         logging.info(f"{modelName}|{index_step1}|{index_selectSpeaker}|{index_contextReduction}|{index_chatSequence}|{i}|{outcome}|{seqlength}")
-
-
-                    # logging.info(f"Model/Sequence - Correct/Correct with Tidy/Exists Within/Iterations | {modelName}/{index+1} - {correctCount}/{correctWithTidy}/{existsWithin}/{iterations}")
-
-                    # logging.info(f"\n--------{chatSequence}\n--------\n")
 
                 # break
 
@@ -385,69 +368,3 @@ for modelName in models_in_test:
         # break
 
     # break
-'''
-    for index, chat_sequence in enumerate(chat_sequences):
-
-        if index < 0:
-            continue # Skip some while testing
-        elif index >= 3:
-            # Test by truncating the content for the debating agents speaking (chat messsages 2, 3, 4)
-            # chat_sequence[2]["content"] = f"I am {chat_sequence[2]['name']}. {chat_sequence[2]['content'][:1500]}." # chat_sequence[2]["name"] # "" # f"I am {chat_sequence[2]['name']} and I have spoken." #chat_sequence[2]["content"][:100] + "."
-            # chat_sequence[3]["content"] = f"I am {chat_sequence[3]['name']}. {chat_sequence[3]['content'][:1500]}." # chat_sequence[3]["name"] # "" # f"I am {chat_sequence[3]['name']} and I have spoken." #chat_sequence[3]["content"][:100] + "."
-            # chat_sequence[4]["content"] = f"I am {chat_sequence[4]['name']}. {chat_sequence[4]['content'][:1500]}." # chat_sequence[4]["name"] # "" # f"I am {chat_sequence[4]['name']} and I have spoken." #chat_sequence[4]["content"][:100] + "."
-
-            # print(chat_sequence)
-            print(f"Chat Sequence character length before summaries: {len(str(chat_sequence))}")
-
-            # Replace the debates with their summarised versions
-            for dictionary in summarised_content:
-                for key, value in dictionary.items():
-                    if not value == '':
-                        chat_sequence[key]["content"] = value
-
-        # print(chat_sequence)
-        print(f"Chat Sequence character length: {len(str(chat_sequence))}")
-
-        correct_agent = correct_agent_sequences[index]
-        print(f"Chat Sequence #{index+1}, Expecting '{correct_agent}'")
-        # print(f"Chat Messages:\n{chat_sequence}\n")
-        
-        correctCount = 0
-        correctWithTidy = 0
-        existsWithin = 0
-        iterations = 10
-
-        # Loop through and run the chat sequence, checking for the correct agent name
-        for i in range(iterations):
-            
-            seqlength = len(str(chat_sequence))
-
-            chat_completion = client.chat.completions.create(
-                messages=chat_sequence,
-                model=modelName,
-                temperature=0
-            )
-
-            responseText = chat_completion.choices[0].message.content
-            responseText = responseText.strip()
-            print(f"[{i}] Response: {responseText}")
-
-            if responseText == correct_agent:
-                correctCount = correctCount + 1
-                print("MATCHED!")
-            else:
-
-                tidyName = responseText.replace('\\_', '_')
-                tidyName = tidyName.replace(" ", "_")
-
-                if tidyName == correct_agent:
-                    correctWithTidy = correctWithTidy + 1
-                else:
-                    if correct_agent in responseText or correct_agent in tidyName:
-                        existsWithin = existsWithin + 1
-
-
-        print(f"Model/Sequence - Correct/Correct with Tidy/Exists Within/Iterations | {modelName}/{index+1} - {correctCount}/{correctWithTidy}/{existsWithin}/{iterations}")
-
-        # break
-'''
