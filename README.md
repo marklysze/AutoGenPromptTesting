@@ -32,7 +32,9 @@ The code I'm currently testing with is in [Speaker Selection - Test Rounds](spea
 | :white_check_mark: | All 5 correct |
 | :large_orange_diamond: | 4 of 5 correct |
 | :x: | 3 or less correct |
+| :thumbsdown: | didn't pass GO |
 
+_Wide table - scroll -- >_
 
 **Step 1 Content**|	**Select Speaker**|	**Context Reduction**|	phind-codellama:34b-v2|	mixtral 8x7B (Q4)|	openhermes:7b-mistral-v2.5-q6_K|	orca2:13b-q5_K_S|	solar:10.7b-instruct-v1-q5_K_M|	neural-chat:7b-v3.3-q6_K|	llama2:13b-chat|	qwen:14b-chat-q6_K|	mistral:7b-instruct-q6_K|	yi:34b-chat-q3_K_M|	phi-2|
 | --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |	 --- |
@@ -179,7 +181,7 @@ Lastly, a lot of it is promping skills and I'm no expert :).
 | Orca 2 13B | Only completed one test well, didn't follow directions well for the rest |
 | Qwen 14B Chat (Q6) | I had not used this model before and was hopefully, but it never passed a test and following directions wasn't its forte. |
 | Phi-2 | Unfortunately the context length supported by this model quickly ran out. Additionally, it really didn't follow the directions precisely. |
-| Phind CodeLlama 34B | Surprisingly good! Up with Mixtral |
+| Phind CodeLlama 34B | Surprisingly good! Up with Mixtral. However, it says it won't debate! |
 | Yi-34B Chat (Q3) | This surprised me, it really was the worst of the bunch. I'm ranking it below Phi-2 as it is too large to be this bad at following directions. Perhaps an Instruct / Other version would be better. |
 
 See more information in one of my [prompt findings](speaker_selection/PromptFindings.txt) documents that shows how I iterated through prompts and what the effect was on each of the LLMs' responses.
