@@ -1,0 +1,20 @@
+Purpose: Cater for spaces and underscore markdown returned by LLMs.
+
+groupchat.py
+
+class GroupChat:
+
+def _mentioned_agents(self, message_content: Union[str, List], agents: Optional[List[Agent]]) -> Dict:
+
+CHANGE:
+            regex = (
+                r"(?<=\W)" + re.escape(agent.name) + r"(?=\W)"
+            )  # Finds agent mentions, taking word boundaries into account
+
+TO:
+
+            regex = (
+                r"(?<=\W)(" + re.escape(agent.name) + r"|"
+                + re.escape(agent.name.replace('_', ' ')) + r"|"
+                + re.escape(agent.name.replace('_', r'\_')) + r")(?=\W)"
+            )

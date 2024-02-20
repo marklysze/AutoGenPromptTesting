@@ -1,0 +1,54 @@
+Purpose: In the finalise speaker function, if the LLM returns more than one agent, use the LLM to pick the primary one in the response.
+
+groupchat.py
+
+class GroupChat:
+
+def _finalize_speaker(self, last_speaker: Agent, final: bool, name: str, agents: Optional[List[Agent]]) -> Agent:
+
+CHANGE:
+        def _finalize_speaker(self, last_speaker: Agent, final: bool, name: str, agents: Optional[List[Agent]]) -> Agent:
+TO:
+
+def _finalize_speaker(self, last_speaker: Agent, final: bool, name: str, selector: ConversableAgent, agents: Optional[List[Agent]]) -> Agent:
+
+
+CHANGE:
+        if len(mentions) == 1:
+            name = next(iter(mentions))
+
+TO:
+        if len(mentions) == 1:
+            name = next(iter(mentions))
+        # MS - For when we have more than one name, requery the LLM with the response to pick the single agent
+        elif len(mentions) > 1:
+            select_name_query = [
+                {
+                    'content': f'Respond with just the name of the next speaker\'s name identified by this text: {name}',
+                    'role' : 'system'
+                }
+            ]
+
+            # Requery with just the latest reply and try and get it to narrow it down to a single agent name.
+            final_single, name_single = selector.generate_oai_reply(select_name_query)
+
+            # Try again to see if we've got just one name matching
+            mentions = self._mentioned_agents(name_single, agents)
+            if len(mentions) == 1:
+                name = next(iter(mentions))
+                logger.warning(f"[Note: Successfully requeried initial speaker selection response to narrow to one agent: {name}]")
+            else:
+                logger.warning(
+                    f"GroupChat select_speaker failed to resolve the next speaker's name. Multiple names in original reply and re-queried but unable to successfully identify a single agent. Original agent selection reply: {name}\nRequeried agent selection reply: {name_single}"
+                )
+
+
+def select_speaker(self, last_speaker: Agent, selector: ConversableAgent) -> Agent:
+AND
+async def a_select_speaker(self, last_speaker: Agent, selector: ConversableAgent) -> Agent:
+
+CHANGE:
+        return self._finalize_speaker(last_speaker, final, name, agents)
+
+TO:
+        return self._finalize_speaker(last_speaker, final, name, selector, agents)

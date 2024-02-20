@@ -1,0 +1,13 @@
+Purpose: Change "is termination" function to allow TERMINATE (case-sensitive) to be anywhere in the response to mean termination
+
+conversable_agent.py
+
+class ConversableAgent:
+
+def __init__(
+
+CHANGE:
+        # else (lambda x: content_str(x.get("content")) == "TERMINATE")
+TO:
+
+        else (lambda x: "TERMINATE" in content_str(x.get("content")))

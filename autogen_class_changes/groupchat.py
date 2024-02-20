@@ -225,7 +225,7 @@ Read the following conversation.
 Then select the next role from {[agent.name for agent in agents]} to play. Only return the role."""
         '''
         # MS Adjusted to match the next function
-        return f"You are in a role play game. The following roles are available:\n{self._participant_roles(agents)}.\n\nRoles must be selected in this order: {', '.join([f'{index + 1}. {agent.name}' for index, agent in enumerate(agents)])}. What is the next role in the sequence to speak, answer concisely please? If everyone has spoken the next speaker is the {agents[0].name}."
+        return f"You are in a role play game. The following roles are available:\n{self._participant_roles(agents)}.\n\nRoles must be selected in this order: {', '.join([f'{index + 1}. {agent.name}' for index, agent in enumerate(agents)])}. What is the next role in the sequence to speak, answer concisely please? If everyone has spoken the next speaker is the 'Debate_Judge'."
 
     def select_speaker_prompt(self, agents: Optional[List[Agent]] = None) -> str:
         """Return the floating system prompt selecting the next speaker. This is always the *last* message in the context."""
@@ -236,7 +236,7 @@ Then select the next role from {[agent.name for agent in agents]} to play. Only 
         '''
 
         # MS Select Speaker #1
-        return f"Read the above conversation and select the next role, the list of roles is {[f'{agent.name}' for agent in agents]}. What is the next role in the sequence to speak, answer concisely please? If everyone has spoken the next speaker is the {agents[0].name}."
+        return f"Read the above conversation and select the next role, the list of roles is {', '.join([f'{index + 1}. {agent.name}' for index, agent in enumerate(agents)])}. The order is Affirmative_Constructive_Debater, Negative_Constructive_Debater, Affirmative_Rebuttal_Debater, then Negative_Rebuttal_Debater, and then the Debate_Judge. What is the next role in the sequence to speak, answer concisely please? If everyone has spoken the next speaker is the 'Debate_Judge'." #{agents[0].name}."
 
     def manual_select_speaker(self, agents: Optional[List[Agent]] = None) -> Union[Agent, None]:
         """Manually select the next speaker."""
@@ -397,7 +397,7 @@ Then select the next role from {[agent.name for agent in agents]} to play. Only 
         # Post-testing: Mixtral producing correct result consistently
         shorter_messages = messages.copy()
         for message in shorter_messages:
-            if 'name' in message:
+            if 'name' in message and message['name'] is not 'userproxy':
                 message['content'] = f"I am {message['name']} and I have spoken."
 
         final, name = selector.generate_oai_reply(shorter_messages)

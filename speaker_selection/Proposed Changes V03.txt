@@ -1,0 +1,21 @@
+Purpose: Replace the content for speakers to be just their names, essentially. Works if you don't need to know what they said to select the next speaker (only who spoke and when)
+
+groupchat.py
+
+class GroupChat:
+
+def select_speaker(self, last_speaker: Agent, selector: ConversableAgent) -> Agent:
+
+CHANGE:
+        # auto speaker selection
+        selector.update_system_message(self.select_speaker_msg(agents))
+        final, name = selector.generate_oai_reply(messages)
+
+TO (it should be configurable, this was for this case):
+
+        shorter_messages = messages.copy()
+        for message in shorter_messages:
+            if 'name' in message and not message['name'] == 'userproxy':
+                message['content'] = f"I am {message['name']} and I have spoken."
+        
+        final, name = selector.generate_oai_reply(shorter_messages)

@@ -5,7 +5,7 @@ import os
 os.system('clear')
 
 class debate:    
-    def __init__(self,api_key="NotRequired",llm="Local8801", saved_team=r'debateteam.json'):
+    def __init__(self,api_key="NotRequired",llm="Local8801", saved_team='./speaker_selection/debateteam.json'):
         import os
         import json
         
