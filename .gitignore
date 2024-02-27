@@ -1,4 +1,5 @@
 outputs/*
 testruns/*
 .cache/*
+speaker_selection/.cache
 speaker_selection/testcustomclient.py

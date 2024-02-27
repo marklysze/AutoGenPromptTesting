@@ -1,0 +1,17 @@
+[
+    {
+        "model": "Local8801",
+        "api_key": "NotRequired",
+        "base_url": "http://0.0.0.0:8801"
+    },
+    {
+        "model": "phi",
+        "model_client_cls": "OllamaModelClient",
+        "api_key": "NotRequired",
+        "device": "cuda",
+        "n": 1,
+        "params": {
+            "max_length": 1000
+        }
+    }
+]

@@ -1,24 +1,21 @@
 import autogen
 
 class debate:    
-    def __init__(self,api_key="NotRequired",llm="mixtralcopy", saved_team=r'debateteam.json'):
+    def __init__(self,api_key="NotRequired",llm="PerAgentInJson", saved_team=r'debateteam-ollama-direct.json'):
         import os
         import json
         
         self.llm=llm
-        # tdict={"model":llm,"api_key":api_key,"base_url": "http://0.0.0.0:8801"}
         tdict={"model":llm,"api_key":api_key,"base_url": "http://localhost:11434/v1"}
         os.environ['OAI_CONFIG_LIST']="["+json.dumps(tdict)+"]"
         self.config_file_or_env='OAI_CONFIG_LIST'
         self.saved_team=saved_team
-        # self.llm_config={'temperature': 0}
 
         self.llm_config = {
             "timeout": 600,
             "cache_seed": 44,  # change the seed for different trials
             "config_list": autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
-                # filter_dict={"model": ["mixtralcopy"]},
             ),
             "temperature": 0,
         }
@@ -57,8 +54,7 @@ class debate:
         group_chat = autogen.GroupChat(
             agents=self.agent_list, 
             messages=[],
-            # speaker_selection_method="round_robin", # Added for Run 08.
-            max_round=2) # Reduced from 15 to 6 for Run 8, then back to 15 from Run 9 onward 
+            max_round=8) # Reduced from 15 to 6 for Run 8, then back to 15 from Run 9 onward 
         
         manager = autogen.GroupChatManager(
             groupchat=group_chat,
